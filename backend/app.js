@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config({ path: '../.env' });
 const express = require('express');
 const session = require("express-session");
 const app = express();
@@ -43,7 +43,8 @@ app.use(cors({
 // Google OAuth
 app.use('/auth/google', oauth);
 
-app.use("/api/routes", authChecker, routeRoutes);  // Aggiungi il prefisso /api/routes
+//app.use("/api/routes", authChecker, routeRoutes);  // Aggiungi il prefisso /api/routes
+app.use("/api/routes", routeRoutes);  // Aggiungi il prefisso /api/routes
 
 // API
 // Dashboard (accessibile solo agli utenti autenticati)

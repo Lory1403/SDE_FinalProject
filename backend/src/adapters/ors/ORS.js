@@ -13,12 +13,14 @@ class ORS {
       });
 
       // Invia la richiesta a OpenRouteService
-      const response = await axios.post("https://api.openrouteservice.org/v2/directions/foot-hiking", body, {
+      const response = await axios.post("https://api.openrouteservice.org/v2/directions/foot-hiking/json", body, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": process.env.ORS_TOKEN,  // Usa il token OpenRouteService
         },
       });
+
+      console.lot(response.data);
 
       return response.data;  // Restituisci il percorso calcolato
     } catch (error) {

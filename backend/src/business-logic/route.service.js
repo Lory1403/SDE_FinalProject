@@ -1,7 +1,5 @@
 const ORS = require("../adapters/ors/OSR");
 
-require('dotenv').config({ path: '../.env' });
-
 class RouteService {
   async calculateRoute(start, end) {
     try {

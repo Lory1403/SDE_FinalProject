@@ -1,6 +1,8 @@
 const axios = require("axios");  // Usa Axios per fare richieste HTTP
 const e = require("express");
 
+require('dotenv').config({ path: '../../.env' });
+
 class ORS {
   async calculateRoute(start, end) {
     try {

@@ -1,10 +1,14 @@
 const ORS = require("../adapters/ors/ORS");
+const CoordinatesExtractor = require("./coordinates.extractor");
 
 class RouteService {
   async calculateRoute(start, end) {
     try {
       const route = await ORS.calculateRoute(start, end);
-      return route;
+
+      const coordinates = await CoordinatesExtractor.extractCoordinates(route);
+
+      return coordinates;
     } catch (error) {
       throw new Error("Error calculating route: " + error.message);
     }

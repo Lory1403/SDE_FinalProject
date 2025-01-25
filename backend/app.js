@@ -10,6 +10,7 @@ const oauth = require('./src/adapters/auth/oauth.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
 
 const routeRoutes = require('./src/routes/route.routes.js');
+const routeElevation = require('./src/routes/route.elevation.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,6 +46,7 @@ app.use('/auth/google', oauth);
 
 //app.use("/api/routes", authChecker, routeRoutes);  // Aggiungi il prefisso /api/routes
 app.use("/api/routes", routeRoutes);  // Aggiungi il prefisso /api/routes
+app.use("/api/elevation", routeElevation);  // Aggiungi il prefisso /api/elevation
 
 // API
 // Dashboard (accessibile solo agli utenti autenticati)

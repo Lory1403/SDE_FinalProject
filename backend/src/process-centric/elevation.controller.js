@@ -1,8 +1,8 @@
-const RouteService = require("../business-logic/route.service");  // Importa il service
+const ElevationService = require("../business-logic/elevation.service");  // Importa il service
 
-class RouteController {
+class ElevationController {
   // Funzione per elaborare le coordinate e passare al service
-  async getRoute(start, end) {
+  async getElevation(start, end) {
     try {
       // Funzione per validare e parsare le coordinate
       function parseCoordinates(coord) {
@@ -17,7 +17,7 @@ class RouteController {
       const parsedEnd = parseCoordinates(end);
 
       // Passa i dati validati al service per calcolare il percorso
-      const coordinates = await RouteService.calculateRoute(parsedStart, parsedEnd);
+      const coordinates = await ElevationService.calculateElevation(parsedStart, parsedEnd);
       return coordinates;  // Restituisci il percorso calcolato
     } catch (error) {
       throw new Error("Error in processing coordinates: " + error.message);  // Gestisci eventuali errori
@@ -25,4 +25,4 @@ class RouteController {
   }
 }
 
-module.exports = new RouteController();  // Esporta un'istanza del controller
+module.exports = new ElevationController();  // Esporta un'istanza del controller

@@ -8,7 +8,7 @@ class ORS {
     try {
       // Corpo della richiesta per OpenRouteService (personalizza le coordinate e il token)
       const body = JSON.stringify({
-        coordinates: [[start.lng, start.lat], [end.lng, end.lat]],
+        coordinates: [[start.lat, start.lng], [end.lat, end.lng]],
         profileName: "foot-walking",
       });
 

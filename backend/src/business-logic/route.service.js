@@ -1,4 +1,4 @@
-const ORS = require("../adapters/ors/OSR");
+const ORS = require("../adapters/ors/ORS");
 
 class RouteService {
   async calculateRoute(start, end) {

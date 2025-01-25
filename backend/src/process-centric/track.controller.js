@@ -1,8 +1,8 @@
-const ElevationService = require("../business-logic/elevation.service");  // Importa il service
+const TrackService = require("../business-logic/track.service");  // Importa il service
 
-class ElevationController {
+class TrackController {
   // Funzione per elaborare le coordinate e passare al service
-  async getElevation(start, end) {
+  async getTrack(start, end) {
     try {
       // Funzione per validare e parsare le coordinate
       function parseCoordinates(coord) {
@@ -17,12 +17,12 @@ class ElevationController {
       const parsedEnd = parseCoordinates(end);
 
       // Passa i dati validati al service per calcolare il percorso
-      const coordinates = await ElevationService.calculateElevation(parsedStart, parsedEnd);
-      return coordinates;  // Restituisci il percorso calcolato
+      const track = await TrackService.calculateTrack(parsedStart, parsedEnd);
+      return track;  // Restituisci il percorso calcolato
     } catch (error) {
       throw new Error("Error in processing coordinates: " + error.message);  // Gestisci eventuali errori
     }
   }
 }
 
-module.exports = new ElevationController();  // Esporta un'istanza del controller
+module.exports = new TrackController();  // Esporta un'istanza del controller

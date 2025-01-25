@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();  // Definisci il router
-const ElevationController = require("../process-centric/elevation.controller");  // Importa il controller
+const TrackController = require("../process-centric/track.controller");  // Importa il controller
 
 // Gestisci la richiesta GET per calcolare il percorso
 router.get("/", async (req, res) => {
@@ -13,8 +13,8 @@ router.get("/", async (req, res) => {
     }
 
     // Passa i parametri al controller
-    const coordinates = await ElevationController.getElevation(start, end);
-    res.status(200).json(coordinates);  // Restituisci il percorso calcolato
+    const track = await TrackController.getTrack(start, end);
+    res.status(200).json(track);  // Restituisci il percorso calcolato
   } catch (error) {
     res.status(500).json({ message: error.message });  // Gestisci gli errori
   }

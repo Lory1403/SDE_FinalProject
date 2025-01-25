@@ -36,9 +36,11 @@ app.use(
 // Frontend
 // app.use('/', express.static('../frontend/dist'));
 
-app.use(cors({
-    origin: 'http://localhost:' + port,
-}));
+app.use(cors());
+
+// app.use(cors({
+//     origin: 'http://localhost:' + port,
+// }));
 
 // Google OAuth
 app.use('/auth/google', oauth);

@@ -6,8 +6,10 @@ const port = process.env.PORT;
 
 const cors = require('cors');
 
-const oauth = require('./google/oauth.js');
-const authChecker = require('./google/authChecker.js');
+const oauth = require('./src/adapters/auth/oauth.js');
+const authChecker = require('./src/adapters/auth/authChecker.js');
+
+const routeRoutes = require('./routes/route.routes.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,6 +42,8 @@ app.use(cors({
 
 // Google OAuth
 app.use('/auth/google', oauth);
+
+app.use("/api/routes", authChecker, routeRoutes);  // Aggiungi il prefisso /api/routes
 
 // API
 // Dashboard (accessibile solo agli utenti autenticati)

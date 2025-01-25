@@ -2,6 +2,9 @@ const authChecker = async (req, res, next) => {
     if (req.session.userInfo) {
         return next(); // Utente autenticato, prosegui con la richiesta
     }
+    
+    req.session.redirectTo = req.originalUrl; // Salva l'URL originale nella sessione
+
     res.redirect("/auth/google"); // Reindirizza alla pagina di login
 }
 

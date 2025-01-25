@@ -13,7 +13,7 @@ class RouteService {
       });
 
       // Invia la richiesta a OpenRouteService
-      const response = await axios.post("https://api.openrouteservice.org/v2/directions/driving-car", body, {
+      const response = await axios.post("https://api.openrouteservice.org/v2/directions/foot-hiking", body, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": process.env.ORS_TOKEN,  // Usa il token OpenRouteService

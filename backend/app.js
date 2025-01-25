@@ -9,7 +9,7 @@ const cors = require('cors');
 const oauth = require('./src/adapters/auth/oauth.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
 
-const routeRoutes = require('./routes/route.routes.js');
+const routeRoutes = require('./src/routes/route.routes.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

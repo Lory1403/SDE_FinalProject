@@ -59,9 +59,15 @@ router.get("/callback", async (req, res) => {
     const userInfo = await userInfoResponse.json();
 
     req.session.userInfo = userInfo;
-    // res.status(userInfoResponse.status).json(userInfo);
-    res.redirect("/");
 
+    // Recupera l'URL di reindirizzamento originale
+    const redirectTo = req.session.redirectTo || "/";
+
+    // Rimuovi redirectTo dalla sessione
+    delete req.session.redirectTo;
+    
+    // Reindirizza l'utente alla pagina originale
+    res.redirect(redirectTo);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });

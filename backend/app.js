@@ -12,6 +12,7 @@ const authChecker = require('./src/adapters/auth/authChecker.js');
 const weather = require('./src/adapters/weather/weather.js');
 const routeTrack = require('./src/routes/route.track.js');
 const location = require('./src/adapters/location-extractor/coordinate.js');
+const difficulty = require('./src/routes/route.difficulty.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -48,6 +49,8 @@ app.use(cors());
 app.use('/auth/google', oauth);
 
 app.use("/api/track", routeTrack);  // Aggiungi il prefisso /api/elevation
+
+app.use("/api/difficulty", difficulty);  // Aggiungi il prefisso /api/difficulty
 
 // Use the weather route
 app.use('/api/weather', weather);

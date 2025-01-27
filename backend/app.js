@@ -6,10 +6,12 @@ const port = process.env.PORT;
 
 const cors = require('cors');
 
+// Import Javascript files
 const oauth = require('./src/adapters/auth/oauth.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
-
+const weather = require('./src/adapters/weather/weather.js');
 const routeTrack = require('./src/routes/route.track.js');
+const location = require('./src/adapters/location-extractor/coordinate.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,8 +47,13 @@ app.use(cors());
 // Google OAuth
 app.use('/auth/google', oauth);
 
-//app.use("/api/routes", authChecker, routeRoutes);  // Aggiungi il prefisso /api/routes
 app.use("/api/track", routeTrack);  // Aggiungi il prefisso /api/elevation
+
+// Use the weather route
+app.use('/api/weather', weather);
+
+// Use the location-extractor route
+app.use('/api/location', location);
 
 // API
 // Dashboard (accessibile solo agli utenti autenticati)
@@ -61,6 +68,12 @@ app.get("/logout", (req, res) => {
     req.session.destroy(() => {
         res.redirect("/"); // Reindirizza alla homepage
     });
+
+    try {
+        console.log(req.session.userInfo.name + " logged out");
+    } catch (error) {
+        console.log("User logged out successfully");
+    }
 });
 
 /* Default 404 handler */

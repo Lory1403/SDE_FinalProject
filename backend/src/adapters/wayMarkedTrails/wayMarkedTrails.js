@@ -37,7 +37,7 @@ router.get("/fromEpsg3857toEpsg4326", async (req, res) => {
     });
 });
 
-router.get("/trailByClick", async (req, res) => {
+router.get("/trailsByClick", async (req, res) => {
     var lat = parseFloat(req.query.lat);
     var lat1 = lat - range;
     var lat2 = lat + range; 
@@ -52,11 +52,57 @@ router.get("/trailByClick", async (req, res) => {
         const data = await response.json();
 
         const extractedData = data.results.map(element => ({
+            ref: element.ref || null,
             id: element.id,
             name: element.name
         }));
 
         res.json(extractedData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.get("/trailById", async (req, res) => {
+    const id = req.query.id;
+    try {
+        const response = await fetch(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${id}`);
+        const data = await response.json();
+
+        const extractedData = {
+            name: data.name,
+            length: data.mapped_length,
+            description: data.tags.description || null
+        };
+
+        res.json(extractedData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.get("/highlightTrail", async (req, res) => {
+    const id = req.query.id;
+    try {
+        const response = await fetch(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${id}/geometry/geojson`);
+        const data = await response.json();
+
+        // Convert all coordinates in the geometry to EPSG:4326
+        const convertedFeatures = data.features.map(feature => {
+            const convertedCoordinates = feature.geometry.coordinates.map(coord => {
+                const [lon, lat] = fromEpsg3857toEpsg4326(coord[0], coord[1]);
+                return [lat, lon];
+            });
+            feature.geometry.coordinates = convertedCoordinates;
+            return feature;
+        });
+
+        const convertedData = {
+            ...data,
+            features: convertedFeatures
+        };
+
+        res.json(convertedData);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -13,6 +13,7 @@ const weather = require('./src/adapters/weather/weather.js');
 const routeTrack = require('./src/routes/route.track.js');
 const location = require('./src/adapters/location-extractor/coordinate.js');
 const difficulty = require('./src/routes/route.difficulty.js');
+const wayMarkedTrails = require('./src/adapters/wayMarkedTrails/wayMarkedTrails.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -57,6 +58,8 @@ app.use('/api/weather', weather);
 
 // Use the location-extractor route
 app.use('/api/location', location);
+
+app.use('/api/wayMarkedTrails', wayMarkedTrails);
 
 // API
 // Dashboard (accessibile solo agli utenti autenticati)

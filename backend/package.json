@@ -9,9 +9,11 @@
     "mongodb": "^6.12.0",
     "mongoose": "^8.9.5",
     "node-fetch": "^3.3.2",
+    "osmtogeojson": "^3.0.0-beta.5",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-oauth2": "^1.8.0",
+    "proj4": "^2.15.0",
     "sde_finalproject": "file:"
   },
   "devDependencies": {

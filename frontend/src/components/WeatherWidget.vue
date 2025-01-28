@@ -62,6 +62,7 @@ export default {
                 ],
             },
             icon: "",
+            map: null,
         };
     },
 
@@ -99,6 +100,8 @@ export default {
                     });
 
                 // Initialize the map
+                if(this.map != null)
+                    this.map.remove();
                 await this.initMap();
                 console.log("Map initialized");
             }
@@ -110,13 +113,13 @@ export default {
         },
         async initMap() {
             // Initialize the map
-            let map = L.map("map"); // Average coordinates of the route
+            this.map = L.map("map"); // Average coordinates of the route
 
             // Add OpenStreetMap base layer
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            }).addTo(map);
+            }).addTo(this.map);
 
             // Add OpenWeather temperature layer
             
@@ -127,9 +130,9 @@ export default {
             ];
 
             //L.imageOverlay(weatherMapUrl, weatherBounds).addTo(map);
-            L.imageOverlay(weatherMapUrl, weatherBounds).addTo(map);
+            L.imageOverlay(weatherMapUrl, weatherBounds).addTo(this.map);
 
-            map.setView([this.latitude, this.longitude], 10);
+            this.map.setView([this.latitude, this.longitude], 10);
         },
     },
 

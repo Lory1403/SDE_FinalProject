@@ -89,11 +89,21 @@ router.get("/highlightTrail", async (req, res) => {
 
         // Convert all coordinates in the geometry to EPSG:4326
         const convertedFeatures = data.features.map(feature => {
-            const convertedCoordinates = feature.geometry.coordinates.map(coord => {
-                const [lon, lat] = fromEpsg3857toEpsg4326(coord[0], coord[1]);
-                return [lat, lon];
-            });
-            feature.geometry.coordinates = convertedCoordinates;
+            if (feature.geometry.type === "MultiLineString") {
+                const convertedCoordinates = feature.geometry.coordinates.map(lineString => {
+                    return lineString.map(coord => {
+                        const [lon, lat] = fromEpsg3857toEpsg4326(coord[0], coord[1]);
+                        return [lon, lat];
+                    });
+                });
+                feature.geometry.coordinates = convertedCoordinates;
+            } else if (feature.geometry.type === "LineString") {
+                const convertedCoordinates = feature.geometry.coordinates.map(coord => {
+                    const [lon, lat] = fromEpsg3857toEpsg4326(coord[0], coord[1]);
+                    return [lon, lat];
+                });
+                feature.geometry.coordinates = convertedCoordinates;
+            }
             return feature;
         });
 

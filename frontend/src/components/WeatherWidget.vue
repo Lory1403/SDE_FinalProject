@@ -43,13 +43,52 @@
             {{ layer.label }}
         </option>
     </select>
+
+    <!-- Route Label -->
+    <div class="route-label">
+        <h2 class="route-name" v-if="route_label.name != null">{{ route_label.name }}</h2>
+        <p class="route-description" v-if="route_label.description != null">{{ route_label.description }}</p>
+        <span class="route-length" v-if="route_label.length != null">Length: {{ route_label.length.toFixed(2) }}
+            meters</span>
+    </div>
+
+    <!-- Chart (Elevation) -->
+    <div class="chart-container">
+        <Line v-if="chartReady" :data="chartData" :options="options" />
+    </div>
 </template>
 
 <script>
 import axios from "axios";
-import L from "leaflet";
+import L, { marker } from "leaflet";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+} from 'chart.js'
+import { Line } from 'vue-chartjs'
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+)
 
 export default {
+    components: {
+        //Chart,
+        Line,
+    },
+
     data() {
         return {
             url_base: "http://127.0.0.1:8080/api/weather/timemachine",
@@ -59,7 +98,7 @@ export default {
             latitude: "",
             longitude: "",
             query: "",
-            datetime: "cazzo",
+            datetime: "",
             weather: {
                 data: [
                     {
@@ -74,8 +113,72 @@ export default {
             icon: "",
             map: null,
             layers: [],
-            geoJsonLayer: null, // Aggiungi una proprietà per mantenere il riferimento al layer GeoJSON
-        };
+            geoJsonLayer: null,             // Aggiungi una proprietà per mantenere il riferimento al layer GeoJSON
+            route_label: {},
+            selectedLayer: null,
+            posEleLatLon: new Map(),        // Map for position, elevation and lat/lon
+            circleMarker: null,             // Marker for the map (point corrisponding to the elevation)
+
+            // Chart data
+            chartReady: false,
+            chartData: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Elevation',
+                        backgroundColor: '#ffffff',
+                        borderColor: 'rgb(75, 192, 192)',
+                        pointRadius: 0,
+                        data: []
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        display: false,
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    axis: 'xy',
+                    mode: 'nearest',
+                },
+                plugins: {
+                    tooltip: {
+                        enabled: true,
+                        external: function (context) {                  // Handle chart interactions
+                            const tooltipModel = context.tooltip;
+
+                            if (!tooltipModel || tooltipModel.dataPoints.length === 0) return;
+
+                            const dataPoint = tooltipModel.dataPoints[0]; // Closest data point
+
+                            // Get coordinates for the marker position
+                            var lat = this.posEleLatLon.get(dataPoint.label).lat;
+                            var lon = this.posEleLatLon.get(dataPoint.label).lon;
+
+                            if (lat != null && lon != null) {
+                                // If the marker already exists, update its position
+                                if (this.circleMarker != null) {
+                                    this.circleMarker.setLatLng([lat, lon]).bringToFront();
+                                } else {
+                                    // Add a marker to the map
+                                    this.circleMarker = L.circleMarker([lat, lon], {
+                                        radius: 6,
+                                        color: '#0000FF',
+                                        fillColor: '#0000FF',
+                                        fillOpacity: 0.8
+                                    }).addTo(this.map).bringToFront();
+                                }
+                            }
+                        }.bind(this) // Assicurati di legare `this` al contesto
+                    }
+                }
+            }
+        }
     },
 
     methods: {
@@ -96,28 +199,23 @@ export default {
                     .then((response) => {
                         this.latitude = response.data.features[0].properties.lat;
                         this.longitude = response.data.features[0].properties.lon;
-                        console.log("Latitude: " + this.latitude + " Longitude: " + this.longitude);
                     });
 
-                /*  ##### DISABLED JUST FOR TESTING #####
                 await axios
                     .get(`${this.url_base}?lat=${this.latitude}&lon=${this.longitude}&time=${currentDate}`)
                     .then((response) => {
-                        //console.log(this.weather);
-                        this.weather = response.data;
-                        //console.log(response.data);
+                        this.weather = response.data;   // Set the weather data
                         this.icon = `${this.weather_icon}${this.weather.data[0].weather[0].icon}${"@2x.png"}`;
                     })
                     .catch((error) => {
                         console.error("Error fetching weather:", error);
                     });
-                */
 
                 // Initialize the map
                 if (this.map != null)
                     this.map.remove();
                 await this.initMap();
-                console.log("Map initialized");
+                // console.log("Map initialized");
             }
         },
         todaysDate() {
@@ -132,8 +230,6 @@ export default {
             await axios
                 .get(`${this.url_trail}?lat=${lat}&lon=${lon}`)
                 .then((response) => {
-                    console.log(response.data);
-
                     // Clear layers
                     this.layers = [];
 
@@ -152,12 +248,15 @@ export default {
 
         // Event handler for layer change (selection)
         async onLayerChange() {
-            console.log("Selected layer:", this.selectedLayer);
+            // Disable the chart until the data is fetched
+            this.chartReady = false;
 
             // Fetch trail data
-            await axios.get(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${this.selectedLayer}`)
+            await axios.get(`http://127.0.0.1:8080/api/wayMarkedTrails/trailById?id=${this.selectedLayer}`)
                 .then((response) => {
-                    console.log(response.data);
+                    // console.log(response.data);
+
+                    this.route_label = response.data;
                 }).catch((error) => {
                     console.error("Error fetching trail data:", error);
                 });
@@ -165,10 +264,10 @@ export default {
             // Fetch trail map
             await axios.get(`http://127.0.0.1:8080/api/wayMarkedTrails/highlightTrail?id=${this.selectedLayer}`)
                 .then((response) => {
-                    console.log(response.data);
+                    // console.log(response.data);
 
                     // Rimuovi il layer GeoJSON precedente, se esiste
-                    if (this.geoJsonLayer) {
+                    if (this.geoJsonLayer != null) {
                         this.map.removeLayer(this.geoJsonLayer);
                     }
 
@@ -181,11 +280,42 @@ export default {
                     }).addTo(this.map);
 
                     // Fit the map view to the bounds of the GeoJSON layer
-                    this.map.fitBounds(geoJsonLayer.getBounds());
+                    this.map.fitBounds(this.geoJsonLayer.getBounds());
                 }).catch((error) => {
                     console.error("Error fetching trail map:", error);
                 });
+
+            // Update the chart data
+            await this.updateChart();
         },
+
+        // Method to update data for the chart
+        async updateChart() {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8080/api/wayMarkedTrails/trailElevation?id=${this.selectedLayer}`);
+
+                // Reset data before updating
+                this.chartData.labels = [];
+                this.chartData.datasets[0].data = [];
+                
+                // Create map for later use to draw points on the map
+                this.posEleLatLon.clear();
+
+                // Update the chart data
+                response.data.elevation.forEach(point => {
+                    this.posEleLatLon.set(point.pos.toFixed(2), { ele: point.ele, lat: point.lat, lon: point.lon });    // Map used to draw points on the map
+                    this.chartData.labels.push(point.pos.toFixed(2));
+                    this.chartData.datasets[0].data.push(point.ele.toFixed(1));
+                });
+
+                // Set the chart as ready to render
+                this.chartReady = true;
+            } catch (error) {
+                console.error("Error updating chart:", error);
+            }
+        },
+
+
 
         async initMap() {
             // Initialize the map
@@ -193,7 +323,7 @@ export default {
 
             // Add listener for map click
             this.map.on("click", (e) => {
-                console.log("Map clicked at: " + e.latlng);
+                // console.log("Map clicked at: " + e.latlng);
                 this.fetchTrail(e.latlng.lat, e.latlng.lng);
             });
 
@@ -203,7 +333,7 @@ export default {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(this.map);
-
+ 
             // Add OpenWeather temperature layer
             
             const weatherMapUrl = `http://127.0.0.1:8080/api/weather/map?map_type=rain&z=0&lat=0&lon=0`;
@@ -211,13 +341,12 @@ export default {
                 [-90, -180], // Southwest corner (latitude, longitude)
                 [90, 180],   // Northeast corner (latitude, longitude)
             ];
-
+ 
             //L.imageOverlay(weatherMapUrl, weatherBounds).addTo(map);
             L.imageOverlay(weatherMapUrl, weatherBounds).addTo(this.map);
-
+ 
             this.map.setView([this.latitude, this.longitude], 10);
             */
-
 
             // Add base OpenStreetMap tiles
             const baseLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -240,9 +369,6 @@ export default {
             this.pathsLayer = L.layerGroup().addTo(this.map);
 
             this.map.setView([this.latitude, this.longitude], 10);
-
-            // https://hiking.waymarkedtrails.org/api/v1/details/relation/5146467   5146467 --> id percorso???
-            // https://hiking.waymarkedtrails.org/api/v1/list/by_ids?relations=2896352,2899003  --> lista dei percorsi
         },
     },
 
@@ -283,7 +409,7 @@ export default {
 }
 
 .weather-wrap {
-    height: 600px;
+    height: 630px;
     padding: 25px;
     border-radius: 25px;
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.4));
@@ -425,5 +551,41 @@ export default {
     padding: 5px 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+route-label {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    max-width: 400px;
+    margin: 20px auto;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.route-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.route-description {
+    font-size: 16px;
+    font-style: italic;
+    margin: 5px 0;
+}
+
+.route-length {
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
 }
 </style>

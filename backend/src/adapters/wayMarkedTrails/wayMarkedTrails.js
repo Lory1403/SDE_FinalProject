@@ -66,13 +66,34 @@ router.get("/trailsByClick", async (req, res) => {
 router.get("/trailById", async (req, res) => {
     const id = req.query.id;
     try {
-        const response = await fetch(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${id}`);
-        const data = await response.json();
+        const trailInformation = await fetch(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${id}`);
+        const trailData = await trailInformation.json();
+
+        const elevation = await fetch(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${id}/elevation`);
+        const elevationData = await elevation.json();
+
+        // Extract elevation data
+        const elevationPoints = elevationData.segments.flatMap(segment => 
+            segment.elevation.map(point => {
+                const [lon, lat] = fromEpsg3857toEpsg4326(point.x, point.y);
+                return {
+                    lat: lat,
+                    lon: lon,
+                    pos: point.pos,
+                    ele: point.ele,
+                };
+            })
+        );
 
         const extractedData = {
-            name: data.name,
-            length: data.mapped_length,
-            description: data.tags.description || null
+            name: trailData.name,
+            length: trailData.mapped_length,
+            description: trailData.tags.description || null,
+            ascent: trailData.ascent,
+            descent: trailData.descent,
+            min_elevation: trailData.min_elevation,
+            max_elevation: trailData.max_elevation,
+            elevation: elevationPoints
         };
 
         res.json(extractedData);

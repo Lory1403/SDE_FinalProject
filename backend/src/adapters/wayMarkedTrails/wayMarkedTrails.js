@@ -69,6 +69,21 @@ router.get("/trailById", async (req, res) => {
         const trailInformation = await fetch(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${id}`);
         const trailData = await trailInformation.json();
 
+        const extractedData = {
+            name: trailData.name,
+            length: trailData.mapped_length,
+            description: trailData.tags.description || null
+        };
+
+        res.json(extractedData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.get("/trailElevation", async (req, res) => {
+    const id = req.query.id;
+    try {
         const elevation = await fetch(`https://hiking.waymarkedtrails.org/api/v1/details/relation/${id}/elevation`);
         const elevationData = await elevation.json();
 
@@ -86,13 +101,10 @@ router.get("/trailById", async (req, res) => {
         );
 
         const extractedData = {
-            name: trailData.name,
-            length: trailData.mapped_length,
-            description: trailData.tags.description || null,
-            ascent: trailData.ascent,
-            descent: trailData.descent,
-            min_elevation: trailData.min_elevation,
-            max_elevation: trailData.max_elevation,
+            ascent: elevationData.ascent,
+            descent: elevationData.descent,
+            min_elevation: elevationData.min_elevation,
+            max_elevation: elevationData.max_elevation,
             elevation: elevationPoints
         };
 

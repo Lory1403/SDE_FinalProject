@@ -60,7 +60,7 @@
 
 <script>
 import axios from "axios";
-import L, { marker } from "leaflet";
+import L from "leaflet";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -72,6 +72,7 @@ import {
     Legend
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
+import { toZonedTime, format } from 'date-fns-tz'
 
 ChartJS.register(
     CategoryScale,
@@ -315,8 +316,6 @@ export default {
             }
         },
 
-
-
         async initMap() {
             // Initialize the map
             this.map = L.map("map"); // Average coordinates of the route
@@ -370,9 +369,32 @@ export default {
 
             this.map.setView([this.latitude, this.longitude], 10);
         },
+
+        // Method to get user location and set it for the forecast
+        getUserLocation() {
+            // Check if geolocation is supported by the browser
+            if (navigator.geolocation) {
+                console.log("Geolocation is supported by this browser.");
+                navigator.geolocation.getCurrentPosition(this.setPosition, this.showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        },
+
+        // Method to set position given coordinates and set local time
+        async setPosition(position) {
+            fetch(`http://localhost:8080/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    // console.log(data.features[0].properties.city);
+                    this.query = data.features[0].properties.city;
+                    this.datetime = format(toZonedTime(new Date(), data.features[0].properties.timezone.name), "yyyy-MM-dd'T'HH:mm");
+                });
+        },
     },
 
     mounted() {
+        this.getUserLocation();
         // Check latitude and longitude
         if (this.latitude === "" || this.longitude === "") {
             console.error("(Normal error at startup) Latitude and longitude are required.");
@@ -533,6 +555,12 @@ export default {
     font-weight: 700;
     font-style: italic;
     text-shadow: 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.weather-box .icon {
+    background-color: white;
+    border-radius: 50%;
+    opacity: 0.8;
 }
 
 #map {

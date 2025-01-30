@@ -33,28 +33,30 @@
         </div>
     </div>
 
-    <!-- Weather Map -->
-    <div class="weather-map" id="map" style="height: 500px; width: 1000px;"></div>
+    <!-- Track Map -->
+    <div class="track-map" id="map"></div>
 
-    <!-- Dropdown Menu -->
-    <label for="layer-select" class="menu-label">Select a Trail:</label>
-    <select id="layer-select" v-model="selectedLayer" @change="onLayerChange">
-        <option v-for="layer in layers" :key="layer.value" :value="layer.value">
-            {{ layer.label }}
-        </option>
-    </select>
+    <div class="route-info-container">
+        <!-- Dropdown Menu -->
+        <label for="layer-select" class="menu-label">Select a Trail:</label>
+        <select id="layer-select" v-model="selectedLayer" @change="onLayerChange">
+            <option v-for="layer in layers" :key="layer.value" :value="layer.value">
+                {{ layer.label }}
+            </option>
+        </select>
 
-    <!-- Route Label -->
-    <div class="route-label">
-        <h2 class="route-name" v-if="route_label.name != null">{{ route_label.name }}</h2>
-        <p class="route-description" v-if="route_label.description != null">{{ route_label.description }}</p>
-        <span class="route-length" v-if="route_label.length != null">Length: {{ route_label.length.toFixed(2) }}
-            meters</span>
-    </div>
+        <!-- Route Label -->
+        <div class="route-label">
+            <h2 class="route-name" v-if="route_label.name != null">{{ route_label.name }}</h2>
+            <p class="route-description" v-if="route_label.description != null">{{ route_label.description }}</p>
+            <span class="route-length" v-if="route_label.length != null">Length: {{ route_label.length.toFixed(2) }}
+                meters</span>
+        </div>
 
-    <!-- Chart (Elevation) -->
-    <div class="chart-container">
-        <Line v-if="chartReady" :data="chartData" :options="options" />
+        <!-- Chart (Elevation) -->
+        <div class="chart-container">
+            <Line v-if="chartReady" :data="chartData" :options="options" />
+        </div>
     </div>
 </template>
 
@@ -298,7 +300,7 @@ export default {
                 // Reset data before updating
                 this.chartData.labels = [];
                 this.chartData.datasets[0].data = [];
-                
+
                 // Create map for later use to draw points on the map
                 this.posEleLatLon.clear();
 
@@ -383,7 +385,7 @@ export default {
 
         // Method to set position given coordinates and set local time
         async setPosition(position) {
-            fetch(`http://localhost:8080/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+            await fetch(`http://localhost:8080/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
                 .then((response) => response.json())
                 .then((data) => {
                     // console.log(data.features[0].properties.city);
@@ -428,6 +430,11 @@ export default {
     border-radius: 25px;
     margin-top: 50px;
     box-shadow: 0px 0px 30px #00000065;
+
+    /* Positioning parameters */
+    position: relative;
+    left: -72%;
+    top: -80px;
 }
 
 .weather-wrap {
@@ -558,15 +565,32 @@ export default {
 }
 
 .weather-box .icon {
-    background-color: white;
-    border-radius: 50%;
-    opacity: 0.8;
+    display: inline-block;
+    padding: 0px 10px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    margin: 0px 0px;
+    box-shadow: 3px 6px rgba(0, 0, 0, 0.25);
 }
 
 #map {
     margin: 0 auto;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 500px;
+    width: 1000px;
+
+    /* Positioning parameters */
+    position: relative;
+    left: 0%;
+    top: -710px;
+}
+
+.route-info-container {
+    /* Positioning parameters */
+    position: relative;
+    left: 0%;
+    top: -710px;
 }
 
 .menu-label {

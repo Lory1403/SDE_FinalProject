@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
@@ -23,10 +24,6 @@ router.get("/callback", async (req, res) => {
 
   if (!code) {
     return res.status(400).json({ error: "Authorization code missing" });
-  }
-
-  if (state !== req.session.oauthState) {
-    return res.status(400).json({ error: "Invalid state parameter" });
   }
 
   try {
@@ -58,16 +55,25 @@ router.get("/callback", async (req, res) => {
     const userInfoResponse = await fetch(`${process.env.GOOGLE_TOKEN_INFO_URL}?id_token=${id_token}`);
     const userInfo = await userInfoResponse.json();
 
-    req.session.userInfo = userInfo;
+    const payload = {
+      email: userInfo.email,
+      name: userInfo.name,
+      iat: Number(userInfo.iat),
+    };
 
-    // Recupera l'URL di reindirizzamento originale
-    const redirectTo = req.session.redirectTo || "/";
+    console.log("User info:", payload);
 
-    // Rimuovi redirectTo dalla sessione
-    delete req.session.redirectTo;
-    
-    // Reindirizza l'utente alla pagina originale
-    res.redirect(redirectTo);
+    const options = {
+      expiresIn: 3600 // expires in 1 hour
+    };
+
+    const jwtToken = jwt.sign(payload, process.env.SESSION_SECRET, options);
+
+    // URL di reindirizzamento con il JWT come parametro
+    const redirectUrl = `http://localhost:5173?token=${jwtToken}`;
+
+    // Reindirizza al frontend con il token come parametro nell'URL
+    res.redirect(redirectUrl);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });

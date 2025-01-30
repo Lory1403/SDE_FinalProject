@@ -1,6 +1,5 @@
 require('dotenv').config({ path: '../.env' });
 const express = require('express');
-const session = require("express-session");
 const app = express();
 const port = process.env.PORT;
 
@@ -27,16 +26,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Session setup
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: process.env.NODE_ENV === "production" },
-    })
-);
-
 // Frontend
 // app.use('/', express.static('../frontend/dist'));
 
@@ -60,27 +49,6 @@ app.use('/api/weather', weather);
 app.use('/api/location', location);
 
 app.use('/api/wayMarkedTrails', wayMarkedTrails);
-
-// API
-// Dashboard (accessibile solo agli utenti autenticati)
-app.get("/", authChecker, (req, res) => {
-    res.send(
-        `<h1>Dashboard</h1><p>Benvenuto, ${req.session.userInfo.name}</p><a href="/logout">Logout</a>`
-    );
-});
-
-// Logout
-app.get("/logout", (req, res) => {
-    req.session.destroy(() => {
-        res.redirect("/"); // Reindirizza alla homepage
-    });
-
-    try {
-        console.log(req.session.userInfo.name + " logged out");
-    } catch (error) {
-        console.log("User logged out successfully");
-    }
-});
 
 /* Default 404 handler */
 app.use((req, res) => {

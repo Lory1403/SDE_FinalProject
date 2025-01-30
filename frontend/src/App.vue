@@ -1,17 +1,16 @@
 <template>
   <div id="app">
-    <weatherApp />
+    <!-- Visualizza il contenuto della pagina attualmente attiva -->
+    <router-view />
   </div>
 </template>
 
 <script>
-import weatherApp from './components/WeatherWidget.vue'
-export default { 
-  name: 'App', 
-  components: { 
-    weatherApp 
-    } 
-  }
+export default {
+  name: 'SDE_Final_Project',
+};
 </script>
 
-<style></style>
+<style>
+/* Stili globali */
+</style>

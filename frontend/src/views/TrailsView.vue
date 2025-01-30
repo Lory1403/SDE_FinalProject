@@ -166,7 +166,13 @@ export default {
                             if (lat != null && lon != null) {
                                 // If the marker already exists, update its position
                                 if (this.circleMarker != null) {
-                                    this.circleMarker.setLatLng([lat, lon]).bringToFront();
+                                    this.circleMarker.remove();
+                                    this.circleMarker = L.circleMarker([lat, lon], {
+                                        radius: 6,
+                                        color: '#0000FF',
+                                        fillColor: '#0000FF',
+                                        fillOpacity: 0.8
+                                    }).addTo(this.map).bringToFront();
                                 } else {
                                     // Add a marker to the map
                                     this.circleMarker = L.circleMarker([lat, lon], {

@@ -1,0 +1,4 @@
+ - Aggiunta grafico di elevazione del percorso calcolato
+ - Aggiunta info di distanza, elevazione e difficoltà del percorso calcolato
+ - Separazione pulsanti
+ - Salvataggio su DB del percorso calcolato

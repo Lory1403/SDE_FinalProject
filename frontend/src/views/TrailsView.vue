@@ -34,30 +34,31 @@
     </div>
 
     <!-- Track Map -->
-    <div class="track-map" id="map"></div>
+    <div class="track-map" id="extMap"></div>
 
     <div class="route-info-container">
-        <!-- Dropdown Menu -->
-        <label for="layer-select" class="menu-label">Select a Trail:</label>
-        <select id="layer-select" v-model="selectedLayer" @change="onLayerChange">
-            <option v-for="layer in layers" :key="layer.value" :value="layer.value">
-                {{ layer.label }}
-            </option>
-        </select>
+            <!-- Dropdown Menu -->
+            <label for="layer-select" class="menu-label">Select a Trail:</label>
+            <select id="layer-select" v-model="selectedLayer" @change="onLayerChange">
+                <option v-for="layer in layers" :key="layer.value" :value="layer.value">
+                    {{ layer.label }}
+                </option>
+            </select>
 
-        <!-- Route Label -->
-        <div class="route-label">
-            <h2 class="route-name" v-if="route_label.name != null">{{ route_label.name }}</h2>
-            <p class="route-description" v-if="route_label.description != null">{{ route_label.description }}</p>
-            <span class="route-length" v-if="route_label.length != null">Length: {{ route_label.length.toFixed(2) }}
-                meters</span>
-        </div>
+            <!-- Route Label -->
+            <div class="route-label">
+                <h2 class="route-name" v-if="route_label.name != null">{{ route_label.name }}</h2>
+                <p class="route-description" v-if="route_label.description != null">{{ route_label.description }}</p>
+                <span class="route-length" v-if="route_label.length != null">Length: {{ route_label.length.toFixed(2) }} meters</span>
+            </div>
 
-        <!-- Chart (Elevation) -->
-        <div class="chart-container">
-            <Line v-if="chartReady" :data="chartData" :options="options" />
+            <!-- Chart Component -->
+            <ElevationChart
+                :chartData="chartData"
+                :options="options"
+                :chartReady="chartReady"
+            />
         </div>
-    </div>
 </template>
 
 <script>
@@ -75,6 +76,7 @@ import {
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import { toZonedTime, format } from 'date-fns-tz'
+import ElevationChart from "../components/ElevationChart.vue";
 
 ChartJS.register(
     CategoryScale,
@@ -88,8 +90,8 @@ ChartJS.register(
 
 export default {
     components: {
-        //Chart,
-        Line,
+        ElevationChart,
+        // Line,
     },
 
     data() {
@@ -114,7 +116,7 @@ export default {
                 ],
             },
             icon: "",
-            map: null,
+            extMap: null,
             layers: [],
             geoJsonLayer: null,             // Aggiungi una proprietà per mantenere il riferimento al layer GeoJSON
             route_label: {},
@@ -172,7 +174,7 @@ export default {
                                         color: '#0000FF',
                                         fillColor: '#0000FF',
                                         fillOpacity: 0.8
-                                    }).addTo(this.map).bringToFront();
+                                    }).addTo(this.extMap).bringToFront();
                                 } else {
                                     // Add a marker to the map
                                     this.circleMarker = L.circleMarker([lat, lon], {
@@ -180,7 +182,7 @@ export default {
                                         color: '#0000FF',
                                         fillColor: '#0000FF',
                                         fillOpacity: 0.8
-                                    }).addTo(this.map).bringToFront();
+                                    }).addTo(this.extMap).bringToFront();
                                 }
                             }
                         }.bind(this) // Assicurati di legare `this` al contesto
@@ -221,8 +223,8 @@ export default {
                     });
 
                 // Initialize the map
-                if (this.map != null)
-                    this.map.remove();
+                if (this.extMap != null)
+                    this.extMap.remove();
                 await this.initMap();
                 // console.log("Map initialized");
             }
@@ -277,7 +279,7 @@ export default {
 
                     // Rimuovi il layer GeoJSON precedente, se esiste
                     if (this.geoJsonLayer != null) {
-                        this.map.removeLayer(this.geoJsonLayer);
+                        this.extMap.removeLayer(this.geoJsonLayer);
                     }
 
                     // Crea un nuovo layer GeoJSON e aggiungilo alla mappa
@@ -286,10 +288,10 @@ export default {
                             color: "#ff7800",
                             weight: 5 // Adjusted weight for better visibility
                         }
-                    }).addTo(this.map);
+                    }).addTo(this.extMap);
 
                     // Fit the map view to the bounds of the GeoJSON layer
-                    this.map.fitBounds(this.geoJsonLayer.getBounds());
+                    this.extMap.fitBounds(this.geoJsonLayer.getBounds());
                 }).catch((error) => {
                     console.error("Error fetching trail map:", error);
                 });
@@ -326,10 +328,10 @@ export default {
 
         async initMap() {
             // Initialize the map
-            this.map = L.map("map"); // Average coordinates of the route
+            this.extMap = L.map("extMap"); // Average coordinates of the route
 
             // Add listener for map click
-            this.map.on("click", (e) => {
+            this.extMap.on("click", (e) => {
                 // console.log("Map clicked at: " + e.latlng);
                 this.fetchTrail(e.latlng.lat, e.latlng.lng);
             });
@@ -358,24 +360,24 @@ export default {
             // Add base OpenStreetMap tiles
             const baseLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            }).addTo(this.map);
+            }).addTo(this.extMap);
 
             // Add Waymarked Trails hiking layer
             const hikingLayer = L.tileLayer("https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png", {
                 maxZoom: 18,
                 attribution: '&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a>',
-            }).addTo(this.map);
+            }).addTo(this.extMap);
 
             const overlays = {
                 "Hiking Trails": hikingLayer,
             };
 
-            L.control.layers({ "Base Map": baseLayer }, overlays).addTo(this.map);
+            L.control.layers({ "Base Map": baseLayer }, overlays).addTo(this.extMap);
 
             // Initialize an empty layer group for paths
-            this.pathsLayer = L.layerGroup().addTo(this.map);
+            this.pathsLayer = L.layerGroup().addTo(this.extMap);
 
-            this.map.setView([this.latitude, this.longitude], 10);
+            this.extMap.setView([this.latitude, this.longitude], 10);
         },
 
         // Method to get user location and set it for the forecast
@@ -579,7 +581,7 @@ export default {
     box-shadow: 3px 6px rgba(0, 0, 0, 0.25);
 }
 
-#map {
+#extMap {
     margin: 0 auto;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

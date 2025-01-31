@@ -608,6 +608,7 @@ export default {
     text-align: center;
     flex: 0.5;
     margin: 50px auto;
+    min-width: 500px;
 }
 
 /* Menu Styles */

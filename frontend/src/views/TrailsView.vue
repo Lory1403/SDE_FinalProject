@@ -1,42 +1,44 @@
 <template>
-    <div class="weather-container">
-        <div class="weather-wrap">
-            <!-- Location input field -->
-            <div class="search-box"> <input type="text" placeholder="Search..." class="search-bar" v-model="query" />
-            </div>
-
-            <!-- Date and Time input field -->
-            <div class="datetime-box">
-                <input type="datetime-local" id="forecast-time" name="forecast-time" value="2018-06-12T19:30"
-                    v-model="datetime" />
-            </div>
-
-            <!-- Search Button -->
-            <div class="button-box">
-                <button class="search-forecast" @click="fetchWeather">Search</button>
-            </div>
-
-            <!-- Weather Info -->
-            <div class="weather-info" v-if="weather">
-                <div class="location-box">
-                    <div class="location">{{ weather.timezone }} </div>
-                    <!--<div class="date">{{ todaysDate() }}</div> -->
+    <div class="global-container">
+        <div class="weather-container">
+            <div class="weather-wrap">
+                <!-- Location input field -->
+                <div class="search-box"> <input type="text" placeholder="Search..." class="search-bar"
+                        v-model="query" />
                 </div>
-                <div class="weather-box">
-                    <div class="temp">{{ Math.round(weather.data[0].temp) }}°c</div>
-                    <div class="weather">{{ weather.data[0].weather[0].main }}</div>
-                    <div class="icon">
-                        <img :src="icon" />
+
+                <!-- Date and Time input field -->
+                <div class="datetime-box">
+                    <input type="datetime-local" id="forecast-time" name="forecast-time" value="2018-06-12T19:30"
+                        v-model="datetime" />
+                </div>
+
+                <!-- Search Button -->
+                <div class="button-box">
+                    <button class="search-forecast" @click="fetchWeather">Search</button>
+                </div>
+
+                <!-- Weather Info -->
+                <div class="weather-info" v-if="weather">
+                    <div class="location-box">
+                        <div class="location">{{ weather.timezone }} </div>
+                        <!--<div class="date">{{ todaysDate() }}</div> -->
+                    </div>
+                    <div class="weather-box">
+                        <div class="temp">{{ Math.round(weather.data[0].temp) }}°c</div>
+                        <div class="weather">{{ weather.data[0].weather[0].main }}</div>
+                        <div class="icon">
+                            <img :src="icon" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Track Map -->
-    <div class="track-map" id="extMap"></div>
+        <!-- Track Map -->
+        <div class="track-map" id="extMap"></div>
 
-    <div class="route-info-container">
+        <div class="route-info-container">
             <!-- Dropdown Menu -->
             <label for="layer-select" class="menu-label">Select a Trail:</label>
             <select id="layer-select" v-model="selectedLayer" @change="onLayerChange">
@@ -49,16 +51,14 @@
             <div class="route-label">
                 <h2 class="route-name" v-if="route_label.name != null">{{ route_label.name }}</h2>
                 <p class="route-description" v-if="route_label.description != null">{{ route_label.description }}</p>
-                <span class="route-length" v-if="route_label.length != null">Length: {{ route_label.length.toFixed(2) }} meters</span>
+                <span class="route-length" v-if="route_label.length != null">Length: {{ route_label.length.toFixed(2) }}
+                    meters</span>
             </div>
 
             <!-- Chart Component -->
-            <ElevationChart
-                :chartData="chartData"
-                :options="options"
-                :chartReady="chartReady"
-            />
+            <ElevationChart :chartData="chartData" :options="options" :chartReady="chartReady" />
         </div>
+    </div>
 </template>
 
 <script>
@@ -427,31 +427,39 @@ export default {
     font-family: "Montserrat";
 }
 
+.global-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 10px;
+    gap: 10px;
+}
+
+/* Weather Container */
 .weather-container {
     background-image: url("../assets/cold-bg.jpg");
     background-size: cover;
     background-position: center;
     background-position-y: bottom;
     transition: 0.4s;
-    width: 375px;
-    margin: 0 auto;
+    max-width: 375px;
+    width: 100%;
+    margin: 50px auto;
     border-radius: 25px;
-    margin-top: 50px;
     box-shadow: 0px 0px 30px #00000065;
-
-    /* Positioning parameters */
-    position: relative;
-    left: -72%;
-    top: -80px;
 }
 
+/* Weather Wrap */
 .weather-wrap {
-    height: 630px;
+    max-height: 630px;
+    height: 100%;
     padding: 25px;
     border-radius: 25px;
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.4));
 }
 
+/* Search Box */
 .search-box .search-bar {
     display: block;
     width: 100%;
@@ -473,6 +481,7 @@ export default {
     background-color: rgba(255, 255, 255, 0.75);
 }
 
+/* Date & Time Box */
 .datetime-box {
     margin-top: 15px;
     text-align: center;
@@ -510,6 +519,7 @@ export default {
     opacity: 1;
 }
 
+/* Button */
 .button-box {
     text-align: center;
 }
@@ -530,6 +540,7 @@ export default {
     background-color: #45a049;
 }
 
+/* Location Box */
 .location-box .location {
     color: #000000;
     font-size: 32px;
@@ -546,6 +557,7 @@ export default {
     text-align: center;
 }
 
+/* Weather Box */
 .weather-box {
     text-align: center;
 }
@@ -581,26 +593,25 @@ export default {
     box-shadow: 3px 6px rgba(0, 0, 0, 0.25);
 }
 
+/* External Map */
 #extMap {
-    margin: 0 auto;
+    margin: 50px auto;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 500px;
-    width: 1000px;
-
-    /* Positioning parameters */
-    position: relative;
-    left: 0%;
-    top: -710px;
+    flex: 1;
+    height: 600px;
+    min-width: 500px;
 }
 
+/* Route Info */
 .route-info-container {
-    /* Positioning parameters */
-    position: relative;
-    left: 0%;
-    top: -710px;
+    text-align: center;
+    flex: 0.5;
+    margin: 50px auto;
+    min-width: 500px;
 }
 
+/* Menu Styles */
 .menu-label {
     font-size: 1.2rem;
     margin-right: 10px;

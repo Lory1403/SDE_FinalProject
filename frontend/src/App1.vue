@@ -38,7 +38,7 @@ export default {
   methods: {
     fetchRouteData() {
       // Fai una richiesta GET all'API REST per ottenere i dati del percorso
-      axios.get('http://localhost:8080/api/track?start=45.410838,10.852047&end=45.414908,10.858090')
+      axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/track?start=45.410838,10.852047&end=45.414908,10.858090`)
         .then(response => {
           this.routeData = response.data; // Imposta i dati del percorso
           this.loading = false;            // Imposta lo stato di caricamento a false

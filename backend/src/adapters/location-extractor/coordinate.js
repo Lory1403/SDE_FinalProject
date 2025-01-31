@@ -3,11 +3,6 @@ const express = require('express');
 const router = express.Router();
 require('dotenv').config();
 
-/* TEST URLs
-http://127.0.0.1:8080/api/location/reverse?lat=45.552929&lon=10.778730
-http://127.0.0.1:8080/api/location/search?text=Affi
-*/
-
 // Define API base URLs
 const coordinateAPI = 'https://api.geoapify.com/v1/geocode/reverse?lat={lat}&lon={lon}&apiKey={API key}';
 const locationAPI = 'https://api.geoapify.com/v1/geocode/search?text={address}&apiKey={API key}';

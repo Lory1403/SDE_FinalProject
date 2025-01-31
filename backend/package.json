@@ -17,9 +17,6 @@
     "sde_finalproject": "file:"
   },
   "devDependencies": {
-    "@babel/cli": "^7.26.4",
-    "@babel/core": "^7.26.7",
-    "@babel/preset-env": "^7.26.7",
     "nodemon": "^3.1.9"
   },
   "name": "sde_finalproject",
@@ -29,9 +26,7 @@
   "scripts": {
     "run-dev": "nodemon index.js",
     "setup": "node scripts/setup.js",
-    "test": "jest",
-    "build": "babel src -d dist",
-    "start": "node dist/index.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",

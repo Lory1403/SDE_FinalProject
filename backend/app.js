@@ -1,7 +1,6 @@
 require('dotenv').config({ path: '../.env' });
 const express = require('express');
 const app = express();
-const port = process.env.PORT;
 
 const cors = require('cors');
 
@@ -26,14 +25,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Frontend
-// app.use('/', express.static('../frontend/dist'));
-
 app.use(cors());
-
-// app.use(cors({
-//     origin: 'http://localhost:' + port,
-// }));
 
 // Google OAuth
 app.use('/auth/google', oauth);
@@ -49,6 +41,20 @@ app.use('/api/weather', weather);
 app.use('/api/location', location);
 
 app.use('/api/wayMarkedTrails', wayMarkedTrails);
+
+
+
+// app.use("/api/track", authChecker, routeTrack);  // Aggiungi il prefisso /api/elevation
+
+// app.use("/api/difficulty", authChecker, difficulty);  // Aggiungi il prefisso /api/difficulty
+
+// // Use the weather route
+// app.use('/api/weather', authChecker, weather);
+
+// // Use the location-extractor route
+// app.use('/api/location', authChecker, location);
+
+// app.use('/api/wayMarkedTrails', authChecker, wayMarkedTrails);
 
 /* Default 404 handler */
 app.use((req, res) => {

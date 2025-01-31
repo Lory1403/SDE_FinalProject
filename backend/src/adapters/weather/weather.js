@@ -3,17 +3,6 @@ const express = require('express');
 const router = express.Router();
 require('dotenv').config();
 
-/* TEST URLs
-http://127.0.0.1:8080/api/weather?lat=45.552929&lon=10.778730
-http://127.0.0.1:8080/api/weather/timemachine?lat=45.552929&lon=10.778730&time=1737965547
-http://127.0.0.1:8080/api/weather/day_summary?lat=45.552929&lon=10.778730&date=2025-01-27
-
-Weather map
-http://127.0.0.1:8080/api/weather/map?map_type=rain&z=7&x=0&y=0 --> z=zoom, x=longitude, y=latitude
-
-https://www.unixtimestamp.com/ --> For Unix time conversion
-*/
-
 // Define API base URLs
 const baseWeatherAPI = 'https://api.openweathermap.org/data/3.0/onecall/overview?lat={lat}&lon={lon}&units=metric&appid={API key}';
 const timeWeatherAPI = 'https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&units=metric&appid={API key}';

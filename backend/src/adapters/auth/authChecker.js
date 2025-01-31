@@ -8,10 +8,8 @@ const authChecker = async (req, res, next) => {
     if (token) {
         try {
             // Verifica la validità del token e la sua scadenza
-            const decoded = jwt.verify(token, process.env.SESSION_SECRET);
+            jwt.verify(token, process.env.SESSION_SECRET);
 
-            // Aggiungi le informazioni decodificate alla richiesta
-            req.user = decoded; // Le informazioni decodificate possono essere usate nel backend
             return next(); // Token valido, prosegui con la richiesta
         } catch (err) {
             // Controlla se l'errore è dovuto alla scadenza del token

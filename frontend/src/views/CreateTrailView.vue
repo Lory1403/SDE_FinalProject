@@ -48,7 +48,7 @@ export default {
   
       const start = `${lat1},${lng1}`;
       const end = `${lat2},${lng2}`;
-      const url = `http://localhost:8080/api/track?start=${start}&end=${end}`;
+      const url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/track?start=${start}&end=${end}`;
   
       fetch(url)
         .then(response => {

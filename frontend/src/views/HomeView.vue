@@ -31,7 +31,7 @@ export default {
     },
     methods: {
         loginWithGoogle() {
-            window.location.href = `http://localhost:8080/auth/google`;
+            window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/google`;
         },
         isTokenValid(token) {
             try {

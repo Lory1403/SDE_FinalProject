@@ -61,8 +61,6 @@ router.get("/callback", async (req, res) => {
       iat: Number(userInfo.iat),
     };
 
-    console.log("User info:", payload);
-
     const options = {
       expiresIn: 3600 // expires in 1 hour
     };
@@ -70,7 +68,7 @@ router.get("/callback", async (req, res) => {
     const jwtToken = jwt.sign(payload, process.env.SESSION_SECRET, options);
 
     // URL di reindirizzamento con il JWT come parametro
-    const redirectUrl = `http://localhost:5173?token=${jwtToken}`;
+    const redirectUrl = `${process.env.FRONTEND_URL}?token=${jwtToken}`;
 
     // Reindirizza al frontend con il token come parametro nell'URL
     res.redirect(redirectUrl);

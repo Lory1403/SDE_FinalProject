@@ -96,10 +96,10 @@ export default {
 
     data() {
         return {
-            url_base: "http://127.0.0.1:8080/api/weather/timemachine",
-            url_coordinate: "http://127.0.0.1:8080/api/location/search",
-            url_trail: "http://127.0.0.1:8080/api/wayMarkedTrails/trailsByClick",
-            weather_icon: "https://openweathermap.org/img/wn/",
+            url_base: `${import.meta.env.VITE_APP_BACKEND_URL}/api/weather/timemachine`,
+            url_coordinate: `${import.meta.env.VITE_APP_BACKEND_URL}/api/location/search`,
+            url_trail: `${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailsByClick`,
+            weather_icon: `https://openweathermap.org/img/wn/`,
             latitude: "",
             longitude: "",
             query: "",
@@ -263,7 +263,7 @@ export default {
             this.chartReady = false;
 
             // Fetch trail data
-            await axios.get(`http://127.0.0.1:8080/api/wayMarkedTrails/trailById?id=${this.selectedLayer}`)
+            await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailById?id=${this.selectedLayer}`)
                 .then((response) => {
                     // console.log(response.data);
 
@@ -273,7 +273,7 @@ export default {
                 });
 
             // Fetch trail map
-            await axios.get(`http://127.0.0.1:8080/api/wayMarkedTrails/highlightTrail?id=${this.selectedLayer}`)
+            await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/highlightTrail?id=${this.selectedLayer}`)
                 .then((response) => {
                     // console.log(response.data);
 
@@ -303,7 +303,7 @@ export default {
         // Method to update data for the chart
         async updateChart() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8080/api/wayMarkedTrails/trailElevation?id=${this.selectedLayer}`);
+                const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailElevation?id=${this.selectedLayer}`);
 
                 // Reset data before updating
                 this.chartData.labels = [];
@@ -393,7 +393,7 @@ export default {
 
         // Method to set position given coordinates and set local time
         async setPosition(position) {
-            await fetch(`http://localhost:8080/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+            await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
                 .then((response) => response.json())
                 .then((data) => {
                     // console.log(data.features[0].properties.city);

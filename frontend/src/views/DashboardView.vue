@@ -12,6 +12,9 @@
       <router-link to="/personalTrails">
         <button class="action-button">Go to Personal Trails</button>
       </router-link>
+      <router-link to="/createTrail">
+        <button class="action-button">Create a Trail</button>
+      </router-link>
     </div>
   </div>
 </template>

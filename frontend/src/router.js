@@ -3,6 +3,7 @@ import HomeView from './views/HomeView.vue';
 import TrailsView from './views/TrailsView.vue';
 import PersonalTrailsView from './views/PersonalTrailsView.vue';
 import DashboardView from './views/DashboardView.vue';
+import CreateTrailView from './views/CreateTrailView.vue';
 import { jwtDecode } from 'jwt-decode';
 
 // Funzione per verificare se il token esiste e se è valido
@@ -43,6 +44,12 @@ const routes = [
         path: '/personalTrails',
         name: 'personalTrails',
         component: PersonalTrailsView,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/createTrail',
+        name: 'createTrail',
+        component: CreateTrailView,
         meta: { requiresAuth: true },
     },
     // Catch-all route per redirect a / se il percorso non è valido

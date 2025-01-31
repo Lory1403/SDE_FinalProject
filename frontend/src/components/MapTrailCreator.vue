@@ -3,10 +3,10 @@
     <label class="waiting-label" v-if="map == null">Loading map...</label>
     <div id="map" ref="map"></div>
     <div class="control-container">
-      <button class="button-type" :disabled="!selectedPoints || selectedPoints.length !== 2" @click="calculateTrail">Calculate
+      <button class="button-type" :disabled="!selectedPoints || selectedPoints.length !== 2" v-if="selectedPoints && selectedPoints.length == 2" @click="calculateTrail">Calculate
         Trail</button>
-      <button class="button-type" :disabled="selectedPoints.length == 0" @click="clearMap">Clear Map</button>
-      <button class="button-type" :disabled="!trackCoordinates" @click="saveTrack">Save Trail</button>
+      <button class="button-type" :disabled="selectedPoints.length == 0" v-if="selectedPoints.length != 0" @click="clearMap">Clear Map</button>
+      <button class="button-type" :disabled="!trackCoordinates" v-if="trackCoordinates" @click="saveTrack">Save Trail</button>
     </div>
   </div>
 </template>
@@ -194,6 +194,9 @@ export default {
 /* Styling for the control container (buttons) */
 .control-container {
   margin-top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .button-type {

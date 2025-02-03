@@ -1,16 +1,47 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const RouteSchema = new mongoose.Schema(
-  {
-    start: { type: String, required: true },
-    end: { type: String, required: true },
-    difficulty: { type: String, enum: ["easy", "medium", "hard"], required: true },
-    duration: { type: Number, required: true }, // in minuti
-    suggestions: [String], // Percorsi correlati o suggerimenti
+// Definizione dello schema per il percorso
+const trackSchema = new mongoose.Schema({
+  coordinates: {
+    type: [[Number]],
+    required: true
   },
-  { timestamps: true }
-);
+  distance: {
+    type: Number,
+    required: true
+  },
+  duration: {
+    type: Number,
+    required: true
+  },
+  heightDiff: {
+    type: Number,
+    required: true
+  },
+  up: {
+    type: Number,
+    required: true
+  },
+  down: {
+    type: Number,
+    required: true
+  },
+  cmpIdx: {
+    type: String,
+    required: true
+  },
+  CAI: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String, // Aggiungi il campo email
+    required: true
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-const Route = mongoose.model("Route", RouteSchema);
-
-module.exports = Route;
+module.exports = mongoose.model('Track', trackSchema);

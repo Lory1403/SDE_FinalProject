@@ -12,6 +12,7 @@ const routeTrack = require('./src/routes/route.track.js');
 const location = require('./src/adapters/location-extractor/coordinate.js');
 const difficulty = require('./src/routes/route.difficulty.js');
 const wayMarkedTrails = require('./src/adapters/wayMarkedTrails/wayMarkedTrails.js');
+const routeSave = require('./src/routes/route.save.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -42,7 +43,7 @@ app.use('/api/location', location);
 
 app.use('/api/wayMarkedTrails', wayMarkedTrails);
 
-
+app.use('/api/tracks/save', routeSave);
 
 // app.use("/api/track", authChecker, routeTrack);  // Aggiungi il prefisso /api/elevation
 

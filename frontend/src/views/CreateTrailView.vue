@@ -1,7 +1,8 @@
 <template>
   <div>
     <h1>Create a New Trail</h1>
-    <MapTrailCreator @elevation-data="updateElevationData" />
+    <MapTrailCreator @elevation-data="updateElevationData" @clear-map="clearMapData" @summary-data="updateSummaryData" @difficultyData="updateDifficultyData"/>
+    <TrailSummary v-if="summaryData && difficultyData" :summary="summaryData" :difficultyData="difficultyData" />
     <ElevationChart :chartData="chartData" :options="options" :chartReady="chartReady" />
   </div>
 </template>
@@ -9,16 +10,20 @@
 <script>
 import MapTrailCreator from '../components/MapTrailCreator.vue';
 import ElevationChart from "../components/ElevationChart.vue";
+import TrailSummary from '../components/TrailSummary.vue';
 
 export default {
   name: 'CreateTrailView',
   components: {
     MapTrailCreator,
-    ElevationChart
+    ElevationChart,
+    TrailSummary // Aggiungi TrailSummary ai componenti
   },
   data() {
     return {
       elevationData: [],
+      summaryData: null, // Dati per il riepilogo del percorso
+      difficultyData: null, // Dati di difficoltà
       chartData: {
         labels: [],
         datasets: [{
@@ -28,6 +33,33 @@ export default {
           fill: false
         }]
       },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Elevation Profile'
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Position'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Elevation (m)'
+            }
+          }
+        }
+      },
       chartReady: false,
       selectedPoints: [],
       trackCoordinates: [],
@@ -35,85 +67,40 @@ export default {
   },
   methods: {
     updateElevationData(data) {
-      this.elevationData = data;
+      // Impostiamo i dati del grafico di elevazione
+      this.chartData.labels = data.map((_, index) => index); // Posizione sui punti
+      this.chartData.datasets[0].data = data.map(point => point.ele); // Elevazione
+      this.chartReady = true;
     },
-    calculateTrail() {
-      if (this.selectedPoints.length < 2) {
-        console.error('Not enough points selected to calculate trail');
-        return;
-      }
-  
-      const [lat1, lng1] = [this.selectedPoints[0].lat, this.selectedPoints[0].lng];
-      const [lat2, lng2] = [this.selectedPoints[1].lat, this.selectedPoints[1].lng];
-  
-      const start = `${lat1},${lng1}`;
-      const end = `${lat2},${lng2}`;
-      const url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/track?start=${start}&end=${end}`;
-  
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => {
-          this.trackCoordinates = data.geometry.coordinates;
-          this.updateElevationChart(data);
-          this.drawTrack();
-        })
-        .catch(error => {
-          console.error('Error calculating trail:', error);
-        });
+
+    // Metodo per aggiornare i dati del riepilogo
+    updateSummaryData(data) {
+      // Impostiamo i dati del riepilogo ricevuti dal componente MapTrailCreator
+      this.summaryData = {
+        distance: data.distance,   // Distanza percorsa
+        duration: data.duration,   // Durata del percorso
+        heightDiff: data.heightDiff, // Differenza di altitudine
+        up: data.up,               // Dislivello positivo
+        down: data.down            // Dislivello negativo
+      };
     },
-    drawTrack() {
-      if (this.trackCoordinates && this.trackCoordinates.length > 0) {
-        const latlngs = this.trackCoordinates.map(coord => [coord[1], coord[0]]);
-  
-        if (this.trackLayer) {
-          this.map.removeLayer(this.trackLayer);
-        }
-  
-        this.trackLayer = L.polyline(latlngs, { color: 'blue' }).addTo(this.map);
-        this.map.fitBounds(this.trackLayer.getBounds());
-      }
+
+    // Nuovo metodo per aggiornare i dati di difficoltà
+    updateDifficultyData(data) {
+      this.difficultyData = {
+        cmpIdx: data.cmpIdx, // Indice CMP
+        CAI: data.CAI // Codice CAI
+      };
     },
-    updateElevationChart(response) {
-      try {
-        this.chartData.labels = [];
-        this.chartData.datasets[0].data = [];
-  
-        const totalDistance = response.summary.distance;
-        const coordinates = response.geometry.coordinates;
-  
-        coordinates.forEach((point, index) => {
-          const [lon, lat, ele] = point;
-          const pos = (index / coordinates.length) * totalDistance;
-  
-          this.chartData.labels.push(pos.toFixed(2));
-          this.chartData.datasets[0].data.push(ele.toFixed(1));
-        });
-  
-        this.chartReady = true;
-      } catch (error) {
-        console.error("Error updating chart:", error);
-      }
-    },
-    clearMap() {
-      this.selectedPoints = [];
-      if (this.marker1) {
-        this.map.removeLayer(this.marker1);
-        this.marker1 = null;
-      }
-      if (this.marker2) {
-        this.map.removeLayer(this.marker2);
-        this.marker2 = null;
-      }
-      if (this.trackLayer) {
-        this.map.removeLayer(this.trackLayer);
-        this.trackLayer = null;
-      }
-    },
+
+    // Nuovo metodo per resettare il grafico e il riepilogo
+    clearMapData() {
+      this.summaryData = null; // Reset dei dati del riepilogo
+      this.difficultyData = null; // Resetta anche i dati di difficoltà
+      this.chartData.datasets[0].data = []; // Reset dei dati del grafico
+      this.chartData.labels = []; // Reset delle etichette del grafico
+      this.chartReady = false; // Reset della visualizzazione del grafico
+    }
   }
 };
 </script>
@@ -122,5 +109,13 @@ export default {
 h1 {
   text-align: center;
   margin-bottom: 20px;
+}
+.chart-container {
+  display: flex;
+  justify-content: center; /* Centra orizzontalmente */
+  align-items: center;     /* Centra verticalmente */
+  height: 400px;           /* Altezza fissa o dinamica per centrare verticalmente */
+  width: 100%;             /* Assicurati che occupi tutta la larghezza disponibile */
+  margin: 0 auto;          /* Centro orizzontale aggiuntivo */
 }
 </style>

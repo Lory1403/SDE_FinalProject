@@ -7,13 +7,13 @@ class DifficultyCalculator {
     var CAI = summary.up/100 + summary.distance/2000;
 
     if (cmpIdx < 5 ){
-        cmpIdx = "Facile";
+        cmpIdx = "Easy";
     } else if (cmpIdx < 10){
-        cmpIdx = "Moderato";
+        cmpIdx = "Medium";
     } else if (cmpIdx < 20){
-        cmpIdx = "Difficile";
+        cmpIdx = "Hard";
     } else {
-        cmpIdx = "Molto difficile";
+        cmpIdx = "Very hard";
     }
 
     if (CAI < 10) {

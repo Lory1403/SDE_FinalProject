@@ -23,7 +23,23 @@ export default {
       marker2: null,                  // Marker for the second selected point
       selectedPoints: [],             // Array to store the selected point coordinates
       trackLayer: null,               // Layer to store the track polyline
-      trackCoordinates: null          // Array to store the track coordinates
+      trackCoordinates: null,         // Array to store the track coordinates
+      trackData: {
+        summary: {
+          distance: 0,
+          duration: 0,
+          heightDiff: 0,
+          up: 0,
+          down: 0
+        },
+        difficulty: {
+          cmpIdx: 0,
+          CAI: 0
+        },
+        geometry: {
+          coordinates: []
+        },
+      }
     };
   },
   mounted() {
@@ -98,9 +114,7 @@ export default {
       const end = `${lat2},${lng2}`;
       const url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/track?start=${start}&end=${end}`;
 
-      console.log(url);
-
-      // Call the API to calculate the trail using selected points
+      // Prima richiesta: calcola il percorso
       fetch(url)
         .then(response => {
           if (!response.ok) {
@@ -109,14 +123,56 @@ export default {
           return response.json();
         })
         .then(data => {
+          this.trackData.geometry.coordinates = data.geometry.coordinates;           // Store the track geometry
           this.trackCoordinates = data.geometry.coordinates;  // Store the track coordinates
           this.drawTrack();                                   // Draw the track on the map
+
+          // Estrai i dati di elevazione
+          const elevationData = data.geometry.coordinates.map(coord => ({
+            pos: coord[2] || 0, // Se disponibile, usa la quota (ele)
+            ele: coord[2] || 0, // Elevazione
+          }));
+
+          // Emit the elevation data to parent
+          this.$emit("elevation-data", elevationData);
+
+          // Emit the summary data to parent as well
+          const summary = {
+            distance: data.summary.distance,
+            duration: data.summary.duration,
+            heightDiff: data.summary.heightDiff,
+            up: data.summary.up,
+            down: data.summary.down
+          };
+          this.trackData.summary = summary;
+          this.$emit("summary-data", summary);  // Emit summary data
+
+          // Seconda richiesta: calcola la difficoltà
+          const difficultyUrl = `${import.meta.env.VITE_APP_BACKEND_URL}/api/difficulty?start=${start}&end=${end}`;
+          fetch(difficultyUrl)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response for difficulty was not ok');
+              }
+              return response.json();
+            })
+            .then(difficultyData => {
+              const difficulty = {
+                cmpIdx: difficultyData.cmpIdx,
+                CAI: difficultyData.CAI
+              };
+              this.trackData.difficulty = difficulty;
+              this.$emit("difficultyData", difficultyData);
+            })
+            .catch(error => {
+              console.error('Error fetching difficulty:', error);
+            });
+
         })
         .catch(error => {
           console.error('Error calculating trail:', error);
-        });
+      });
     },
-
     // Function to draw the track on the map
     drawTrack() {
       if (this.trackCoordinates && this.trackCoordinates.length > 0) {
@@ -148,14 +204,25 @@ export default {
       }
 
       this.trackCoordinates = null;
+      
+      this.$emit('clear-map');
     },
 
     // Function to store the track on the database
     saveTrack() {
-      axios.post('/api/tracks/save', { coordinates: this.trackCoordinates })
-        .then(response => {
-          alert('Percorso salvato con successo!');
-        });
+      const token = localStorage.getItem('authToken');
+      axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tracks/save`, { track: this.trackData }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        alert('Percorso salvato con successo!');
+      })
+      .catch(error => {
+        console.error('Errore durante il salvataggio del percorso:', error);
+        alert('Errore durante il salvataggio del percorso.');
+      });
     }
   }
 };

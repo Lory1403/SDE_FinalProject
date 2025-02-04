@@ -13,4 +13,8 @@ export default {
 
 <style>
 /* Stili globali */
+body {
+      background-color: black;
+      color: white; /* Per rendere il testo visibile su sfondo nero */
+    }
 </style>

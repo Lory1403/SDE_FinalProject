@@ -32,33 +32,37 @@ app.use(cors());
 // Google OAuth
 app.use('/auth/google', oauth);
 
-app.use("/api/track", routeTrack);  // Aggiungi il prefisso /api/elevation
+// app.use("/api/track", routeTrack);  // Aggiungi il prefisso /api/elevation
 
-app.use("/api/difficulty", difficulty);  // Aggiungi il prefisso /api/difficulty
-
-// Use the weather route
-app.use('/api/weather', weather);
-
-// Use the location-extractor route
-app.use('/api/location', location);
-
-app.use('/api/wayMarkedTrails', wayMarkedTrails);
-
-app.use('/api/tracks/save', routeSave);
-
-app.use('/api/tracks/get', routeGetTracks);
-
-// app.use("/api/track", authChecker, routeTrack);  // Aggiungi il prefisso /api/elevation
-
-// app.use("/api/difficulty", authChecker, difficulty);  // Aggiungi il prefisso /api/difficulty
+// app.use("/api/difficulty", difficulty);  // Aggiungi il prefisso /api/difficulty
 
 // // Use the weather route
-// app.use('/api/weather', authChecker, weather);
+// app.use('/api/weather', weather);
 
 // // Use the location-extractor route
-// app.use('/api/location', authChecker, location);
+// app.use('/api/location', location);
 
-// app.use('/api/wayMarkedTrails', authChecker, wayMarkedTrails);
+// app.use('/api/wayMarkedTrails', wayMarkedTrails);
+
+// app.use('/api/tracks/save', routeSave);
+
+// app.use('/api/tracks/get', routeGetTracks);
+
+app.use("/api/track", authChecker, routeTrack);  // Aggiungi il prefisso /api/elevation
+
+app.use("/api/difficulty", authChecker, difficulty);  // Aggiungi il prefisso /api/difficulty
+
+// Use the weather route
+app.use('/api/weather', authChecker, weather);
+
+// Use the location-extractor route
+app.use('/api/location', authChecker, location);
+
+app.use('/api/wayMarkedTrails', authChecker, wayMarkedTrails);
+
+app.use('/api/tracks/save', authChecker, routeSave);
+
+app.use('/api/tracks/get', authChecker, routeGetTracks);
 
 /* Default 404 handler */
 app.use((req, res) => {

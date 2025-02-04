@@ -115,7 +115,11 @@ export default {
       const url = `${import.meta.env.VITE_APP_BACKEND_URL}/api/track?start=${start}&end=${end}`;
 
       // Prima richiesta: calcola il percorso
-      fetch(url)
+      fetch(url, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -149,7 +153,11 @@ export default {
 
           // Seconda richiesta: calcola la difficoltà
           const difficultyUrl = `${import.meta.env.VITE_APP_BACKEND_URL}/api/difficulty?start=${start}&end=${end}`;
-          fetch(difficultyUrl)
+          fetch(difficultyUrl, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
             .then(response => {
               if (!response.ok) {
                 throw new Error('Network response for difficulty was not ok');
@@ -212,10 +220,10 @@ export default {
     saveTrack() {
       const token = localStorage.getItem('authToken');
       axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tracks/save`, { track: this.trackData }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+            }
+        })
       .then(response => {
         alert('Percorso salvato con successo!');
       })

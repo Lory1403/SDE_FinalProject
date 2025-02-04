@@ -206,14 +206,22 @@ export default {
 
                 // Fetch coordinates from query
                 await axios
-                    .get(`${this.url_coordinate}?text=${this.query}`)
+                    .get(`${this.url_coordinate}?text=${this.query}`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
                     .then((response) => {
                         this.latitude = response.data.features[0].properties.lat;
                         this.longitude = response.data.features[0].properties.lon;
                     });
 
                 await axios
-                    .get(`${this.url_base}?lat=${this.latitude}&lon=${this.longitude}&time=${currentDate}`)
+                    .get(`${this.url_base}?lat=${this.latitude}&lon=${this.longitude}&time=${currentDate}`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
                     .then((response) => {
                         this.weather = response.data;   // Set the weather data
                         this.icon = `${this.weather_icon}${this.weather.data[0].weather[0].icon}${"@2x.png"}`;
@@ -239,7 +247,11 @@ export default {
         async fetchTrail(lat, lon) {
             // Fetch coordinates from query
             await axios
-                .get(`${this.url_trail}?lat=${lat}&lon=${lon}`)
+                .get(`${this.url_trail}?lat=${lat}&lon=${lon}`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
                 .then((response) => {
                     // Clear layers
                     this.layers = [];
@@ -263,7 +275,11 @@ export default {
             this.chartReady = false;
 
             // Fetch trail data
-            await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailById?id=${this.selectedLayer}`)
+            await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailById?id=${this.selectedLayer}`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
                 .then((response) => {
                     // console.log(response.data);
 
@@ -273,7 +289,11 @@ export default {
                 });
 
             // Fetch trail map
-            await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/highlightTrail?id=${this.selectedLayer}`)
+            await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/highlightTrail?id=${this.selectedLayer}`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
                 .then((response) => {
                     // console.log(response.data);
 
@@ -303,7 +323,11 @@ export default {
         // Method to update data for the chart
         async updateChart() {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailElevation?id=${this.selectedLayer}`);
+                const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailElevation?id=${this.selectedLayer}`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    });
 
                 // Reset data before updating
                 this.chartData.labels = [];
@@ -393,10 +417,13 @@ export default {
 
         // Method to set position given coordinates and set local time
         async setPosition(position) {
-            await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+            await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                        }
+                    })
                 .then((response) => response.json())
                 .then((data) => {
-                    // console.log(data.features[0].properties.city);
                     this.query = data.features[0].properties.city;
                     this.datetime = format(toZonedTime(new Date(), data.features[0].properties.timezone.name), "yyyy-MM-dd'T'HH:mm");
                 });
@@ -404,6 +431,7 @@ export default {
     },
 
     mounted() {
+        console.log(localStorage.getItem("authToken"));
         this.getUserLocation();
         // Check latitude and longitude
         if (this.latitude === "" || this.longitude === "") {

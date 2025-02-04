@@ -3,10 +3,11 @@ const TrackModel = require("../adapters/database/models/track.model");
 
 const saveTrack = async (trackData) => {
     try {
-        const { summary, difficulty, geometry } = trackData.track;
+        const { summary, difficulty, geometry, name } = trackData.track;
         email = trackData.email;
 
         const newTrack = new TrackModel({
+            name: name,
             distance: summary.distance,
             duration: summary.duration,
             heightDiff: summary.heightDiff,

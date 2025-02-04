@@ -25,6 +25,7 @@ export default {
       trackLayer: null,               // Layer to store the track polyline
       trackCoordinates: null,         // Array to store the track coordinates
       trackData: {
+        name: "",
         summary: {
           distance: 0,
           duration: 0,
@@ -38,7 +39,7 @@ export default {
         },
         geometry: {
           coordinates: []
-        },
+        }
       }
     };
   },
@@ -218,19 +219,25 @@ export default {
 
     // Function to store the track on the database
     saveTrack() {
-      const token = localStorage.getItem('authToken');
-      axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tracks/save`, { track: this.trackData }, {
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
-            }
+      const trailName = prompt('Enter the name of the trail:');
+      if (trailName) {
+        this.trackData.name = trailName;
+        const token = localStorage.getItem('authToken');
+        axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tracks/save`, { track: this.trackData }, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          }
         })
-      .then(response => {
-        alert('Percorso salvato con successo!');
-      })
-      .catch(error => {
-        console.error('Errore durante il salvataggio del percorso:', error);
-        alert('Errore durante il salvataggio del percorso.');
-      });
+          .then(response => {
+            alert('Percorso salvato con successo!');
+          })
+          .catch(error => {
+            console.error('Errore durante il salvataggio del percorso:', error);
+            alert('Errore durante il salvataggio del percorso.');
+          });
+      } else {
+        alert('Il nome del tracciato è obbligatorio.');
+      }
     }
   }
 };

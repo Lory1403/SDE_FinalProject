@@ -46,7 +46,7 @@
   <style scoped>
   .trail-summary {
     padding: 20px;
-    background-color: #f0f0f0;
+    background-color: #424242;
     border-radius: 8px;
     margin-top: 20px;
     text-align: center;

@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
-// Definizione dello schema per il percorso
 const trackSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
   coordinates: {
     type: [[Number]],
     required: true
@@ -35,7 +38,7 @@ const trackSchema = new mongoose.Schema({
     required: true
   },
   email: {
-    type: String, // Aggiungi il campo email
+    type: String,
     required: true
   },
   timestamp: {

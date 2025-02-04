@@ -10,4 +10,4 @@ const getUserTracks = async (email) => {
     }
 };
 
-module.exports = getUserTracks;
+module.exports = { getUserTracks };

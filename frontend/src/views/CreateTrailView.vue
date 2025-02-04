@@ -21,6 +21,7 @@ export default {
   },
   data() {
     return {
+      trailName: '',
       elevationData: [],
       summaryData: null, // Dati per il riepilogo del percorso
       difficultyData: null, // Dati di difficoltà

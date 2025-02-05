@@ -1,10 +1,22 @@
 <template>
-  <div>
-    <h1>Create a New Trail</h1>
-    <MapTrailCreator ref="MapTrailCreator" @elevation-data="updateElevationData" @clear-map="clearMapData" @summary-data="updateSummaryData"
-      @difficultyData="updateDifficultyData" />
-    <TrailSummary v-if="summaryData && difficultyData" :summary="summaryData" :difficultyData="difficultyData" />
-    <ElevationChart :chartData="chartData" :options="options" :chartReady="chartReady" />
+  <h1>Create a New Trail</h1>
+  <div class="global-container" :class="{ 'chart-ready': chartReady }">
+
+    <div class="map-container">
+      <MapTrailCreator ref="MapTrailCreator" @elevation-data="updateElevationData" @clear-map="clearMapData"
+        @summary-data="updateSummaryData" @difficultyData="updateDifficultyData" />
+    </div>
+
+    <div class="chart_summary-container">
+      <ElevationChart :chartData="chartData" :options="options" :chartReady="chartReady" />
+      <TrailSummary v-if="summaryData && difficultyData" :summary="summaryData" :difficultyData="difficultyData" />
+    </div>
+
+    <!--
+    <div class="trailSummary-container">
+      <TrailSummary v-if="summaryData && difficultyData" :summary="summaryData" :difficultyData="difficultyData" />
+    </div>
+    -->
   </div>
 </template>
 
@@ -148,17 +160,43 @@ h1 {
   margin-bottom: 20px;
 }
 
-.chart-container {
-  display: flex;
-  justify-content: center;
-  /* Centra orizzontalmente */
-  align-items: center;
-  /* Centra verticalmente */
-  height: 400px;
-  /* Altezza fissa o dinamica per centrare verticalmente */
+.global-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin: 10px;
+}
+
+.map-container {
   width: 100%;
-  /* Assicurati che occupi tutta la larghezza disponibile */
-  margin: 0 auto;
-  /* Centro orizzontale aggiuntivo */
+  min-height: 500px; /* Ensure map has minimum height */
+}
+
+/* .chart-container {
+  display: none;
+} */
+
+/* .trailSummary-container {
+  width: 100%;
+} */
+
+@media (min-width: 1200px) {
+  .global-container {
+    grid-template-columns: 1fr;
+  }
+
+  .global-container.chart-ready {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .global-container.chart-ready .map-container,
+  .global-container.chart-ready .chart_summary-container {
+    width: 100%;
+    min-width: auto; /* Remove fixed min-width */
+  }
+
+  .chart_summary-container {
+    display: block;
+  }
 }
 </style>

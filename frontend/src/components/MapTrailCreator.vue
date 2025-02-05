@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import markerIcon from '../assets/marker-icon.png';
 import L from 'leaflet';
 import axios from 'axios';
 
@@ -60,14 +61,21 @@ export default {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           }).addTo(this.map);
 
+          // Import marker icon to use
+          const Icon = L.icon({
+            iconUrl: markerIcon,
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+          });
+
           // Add a click event listener to the map
           this.map.on('click', (e) => {
             // If no points are selected, add the first marker
             if (!this.selectedPoints.length) {
-              this.marker1 = L.marker(e.latlng).addTo(this.map);
+              this.marker1 = L.marker(e.latlng, { icon: Icon }).addTo(this.map);
               this.selectedPoints.push(e.latlng);
             } else if (this.selectedPoints.length === 1) {        // If one point is already selected, add the second marker
-              this.marker2 = L.marker(e.latlng).addTo(this.map);
+              this.marker2 = L.marker(e.latlng, { icon: Icon }).addTo(this.map);
               this.selectedPoints.push(e.latlng);
             }
           });
@@ -134,6 +142,8 @@ export default {
 
           // Estrai i dati di elevazione
           const elevationData = data.geometry.coordinates.map(coord => ({
+            lon: coord[0],
+            lat: coord[1],
             pos: coord[2] || 0, // Se disponibile, usa la quota (ele)
             ele: coord[2] || 0, // Elevazione
           }));

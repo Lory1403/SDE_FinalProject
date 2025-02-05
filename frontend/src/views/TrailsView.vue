@@ -202,7 +202,6 @@ export default {
             }
             else {
                 const currentDate = this.todaysDate();
-                console.log("Selected date --> " + currentDate);
 
                 // Fetch coordinates from query
                 await axios
@@ -234,7 +233,6 @@ export default {
                 if (this.extMap != null)
                     this.extMap.remove();
                 await this.initMap();
-                // console.log("Map initialized");
             }
         },
         todaysDate() {
@@ -281,8 +279,6 @@ export default {
                         }
                     })
                 .then((response) => {
-                    // console.log(response.data);
-
                     this.route_label = response.data;
                 }).catch((error) => {
                     console.error("Error fetching trail data:", error);
@@ -295,8 +291,6 @@ export default {
                         }
                     })
                 .then((response) => {
-                    // console.log(response.data);
-
                     // Rimuovi il layer GeoJSON precedente, se esiste
                     if (this.geoJsonLayer != null) {
                         this.extMap.removeLayer(this.geoJsonLayer);
@@ -356,7 +350,6 @@ export default {
 
             // Add listener for map click
             this.extMap.on("click", (e) => {
-                // console.log("Map clicked at: " + e.latlng);
                 this.fetchTrail(e.latlng.lat, e.latlng.lng);
             });
 
@@ -408,7 +401,6 @@ export default {
         getUserLocation() {
             // Check if geolocation is supported by the browser
             if (navigator.geolocation) {
-                console.log("Geolocation is supported by this browser.");
                 navigator.geolocation.getCurrentPosition(this.setPosition, this.showError);
             } else {
                 alert("Geolocation is not supported by this browser.");
@@ -431,7 +423,6 @@ export default {
     },
 
     mounted() {
-        console.log(localStorage.getItem("authToken"));
         this.getUserLocation();
         // Check latitude and longitude
         if (this.latitude === "" || this.longitude === "") {

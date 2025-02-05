@@ -36,7 +36,6 @@
             }
           });
           this.trails = response.data;
-          console.log('Fetched trails:', this.trails);
         } catch (error) {
           console.error('Error fetching trails:', error);
         }

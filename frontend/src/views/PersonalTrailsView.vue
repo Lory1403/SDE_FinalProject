@@ -5,7 +5,7 @@
     </div>
     <div class="trail-details">
       <Map :trail="selectedTrail" />
-      <div v-if="selectedTrail" class="trail-info">
+      <div v-if="selectedTrail" class="trail-info scrollable">
         <TrailSummary :summary="summary" :difficultyData="difficultyData" />
         <ElevationChart :chartData="chartData" :options="chartOptions" :chartReady="chartReady" />
       </div>
@@ -109,14 +109,16 @@ export default {
   padding: 20px;
   display: flex;
   flex-direction: column;
-}
-
-#map {
-  height: 50vh; /* Set the map height to half of the viewport height */
-  margin-bottom: 20px;
+  overflow-y: auto; /* Rende il div scrollabile verticalmente */
+  max-height: 100vh; /* Imposta l'altezza massima del div */
 }
 
 .chart-container {
   flex: 1;
+  overflow-y: auto; /* Rende il contenitore scrollabile */
+}
+
+.scrollable {
+  overflow-y: auto;
 }
 </style>

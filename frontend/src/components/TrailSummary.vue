@@ -1,10 +1,10 @@
 <template>
-    <div class="trail-summary">
-      <h2>Trail Summary</h2>
-      <ul>
-        <li><strong>Distance:</strong> {{ formatDistance(summary.distance) }}</li>
-        <li><strong>Duration:</strong> {{ formatDuration(summary.duration) }}</li>
-        <li><strong>Elevation Difference:</strong> {{ summary.heightDiff }} meters</li>
+  <div class="trail-summary">
+    <h2>Trail Summary</h2>
+    <ul>
+      <li><strong>Distance:</strong> {{ formatDistance(summary.distance) }}</li>
+      <li><strong>Duration:</strong> {{ formatDuration(summary.duration) }}</li>
+      <li><strong>Elevation Difference:</strong> {{ summary.heightDiff }} meters</li>
       <li><strong>Up:</strong> {{ summary.up }} meters - <strong>Down:</strong> {{ summary.down }} meters</li>
       <li><strong>Difficulty:</strong></li>
       <li><strong>Cmp Index:</strong> {{ difficultyData.cmpIdx }} - <strong>CAI Code:</strong> {{ difficultyData.CAI }}</li>
@@ -20,10 +20,7 @@
         type: Object,
         required: true,
       },
-      difficultyData: {
-        type: Object,
-        required: true,
-      }
+      difficultyData: Object // Aggiungi la prop per i dati di difficoltà
     },
     methods: {
       formatDuration(seconds) {
@@ -73,4 +70,5 @@
   strong {
     font-weight: bold;
   }
-</style>
+  </style>
+  

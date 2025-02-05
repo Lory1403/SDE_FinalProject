@@ -41,7 +41,7 @@ export default {
           coordinates: []
         }
       },
-      markerIconUrl: '/assets/marker-icon.png' // Use an absolute path to the icon
+      markerIconUrl: '/marker-icon.png' // Use an absolute path to the icon
     };
   },
   mounted() {

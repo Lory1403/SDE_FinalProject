@@ -3,14 +3,7 @@
       <h2>Saved Trails</h2>
       <ul>
         <li v-for="trail in trails.tracks" :key="trail._id" @click="selectTrail(trail)">
-          <h3>{{ trail._id }}</h3>
-          <p>Email: {{ trail.email }}</p>
-          <p>Distance: {{ trail.distance }} meters</p>
-          <p>Duration: {{ trail.duration }} seconds</p>
-          <p>Height Difference: {{ trail.heightDiff }} meters</p>
-          <p>Difficulty: {{ trail.cmpIdx }}</p>
-          <p>CAI: {{ trail.CAI }}</p>
-          <p>Timestamp: {{ new Date(trail.timestamp).toLocaleString() }}</p>
+          <p>{{ trail.name }}</p>
         </li>
       </ul>
     </div>

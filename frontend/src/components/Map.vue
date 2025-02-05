@@ -1,65 +1,78 @@
 <template>
-    <div id="map" style="height: 500px; width: 100%;"></div>
-  </template>
-  
-  <script>
-  import L from "leaflet";
-  
-  export default {
-    name: "Map",
-    props: {
-      // Accetta un percorso in formato GeoJSON come proprietà
-      routeData: {
-        type: Object,
-        required: true,
-      },
+  <div id="map" style="height: 500px; width: 100%;"></div>
+</template>
+
+<script>
+import L from "leaflet";
+
+export default {
+  name: "Map",
+  props: {
+    trail: {
+      type: Object,
+      default: null,
     },
-    mounted() {
-      // Inizializza la mappa solo se i dati sono validi
-      if (this.isValidRouteData()) {
-        this.initMap();
+  },
+  data() {
+    return {
+      map: null,
+      routeLayer: null,
+    };
+  },
+  mounted() {
+    this.initMap();
+  },
+  watch: {
+    trail: {
+      handler(newTrail) {
+        this.updateMap(newTrail);
+      },
+      immediate: true,
+    },
+  },
+  methods: {
+    initMap() {
+      this.map = L.map('map').setView([45.4125, 10.8530], 15);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(this.map);
+
+      if (this.trail && this.trail.coordinates) {
+        this.updateMap(this.trail);
       } else {
-        console.error("I dati del percorso non sono validi.");
+        console.warn("Nessun tracciato selezionato.");
       }
     },
-    methods: {
-      // Verifica che i dati siano validi
-      isValidRouteData() {
-        return this.routeData && this.routeData.coordinates && Array.isArray(this.routeData.coordinates) && this.routeData.coordinates.length > 0;
-      },
-  
-      initMap() {
-        // Crea la mappa centrata su un punto predefinito
-        const map = L.map('map').setView([45.4125, 10.8530], 15); // Coordinate medie del percorso
-  
-        // Aggiungi il layer delle mappe (utilizziamo OpenStreetMap)
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
-  
-        // Crea un array di lat/lng dal percorso JSON
-        const routeCoordinates = this.routeData.coordinates.map(coord => ({
-          lat: coord[1], // Latitudine
-          lng: coord[0], // Longitudine
+    updateMap(trail) {
+      if (this.routeLayer) {
+        this.map.removeLayer(this.routeLayer);
+      }
+
+      if (trail && trail.coordinates) {
+        const routeCoordinates = trail.coordinates.map(coord => ({
+          lat: coord[1],
+          lng: coord[0],
         }));
-  
-        // Aggiungi il percorso alla mappa
-        const route = L.polyline(routeCoordinates, {
+
+        this.routeLayer = L.polyline(routeCoordinates, {
           color: 'blue',
           weight: 4,
-        }).addTo(map);
-  
-        // Adatta la mappa per includere il percorso
-        map.fitBounds(route.getBounds(), { padding: [10, 10] });
-      },
+        }).addTo(this.map);
+
+        const bounds = this.routeLayer.getBounds();
+        this.map.fitBounds(bounds, { padding: [7, 7] });
+      } else {
+        console.warn("Nessun tracciato selezionato.");
+      }
     },
-  };
-  </script>
-  
-  <style>
-  #map {
-    height: 500px; /* Altezza fissa per la mappa */
-    width: 100%;   /* Mappa responsive */
-  }
-  </style>
-  
+  },
+};
+</script>
+
+<style>
+#map {
+  height: 500px;
+  width: 100%;
+}
+</style>

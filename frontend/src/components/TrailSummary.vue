@@ -20,7 +20,10 @@
         type: Object,
         required: true,
       },
-      difficultyData: Object // Aggiungi la prop per i dati di difficoltà
+      difficultyData: {
+        type: Object,
+        required: true,
+      }
     },
     methods: {
       formatDuration(seconds) {
@@ -70,5 +73,4 @@
   strong {
     font-weight: bold;
   }
-  </style>
-  
+</style>

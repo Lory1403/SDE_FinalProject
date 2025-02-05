@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import markerIcon from '../assets/marker-icon.png';
 import L from 'leaflet';
 import axios from 'axios';
 
@@ -41,7 +40,8 @@ export default {
         geometry: {
           coordinates: []
         }
-      }
+      },
+      markerIconUrl: '/assets/marker-icon.png' // Use an absolute path to the icon
     };
   },
   mounted() {
@@ -63,7 +63,7 @@ export default {
 
           // Import marker icon to use
           const Icon = L.icon({
-            iconUrl: markerIcon,
+            iconUrl: this.markerIconUrl,
             iconSize: [25, 41],
             iconAnchor: [12, 41]
           });

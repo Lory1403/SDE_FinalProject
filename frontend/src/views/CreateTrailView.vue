@@ -120,6 +120,19 @@ export default {
       for (let i = 0; i < data.length; i++) {
         this.posEleLatLon.set(i, { ele: data[i].ele, lat: data[i].lat, lon: data[i].lon });    // Map used to draw points on the map
       }
+
+      // Use $nextTick to ensure the map has updated with any new layers before fitting bounds.
+      this.$nextTick(() => {
+        // Check if both map and trackLayer exist to avoid errors
+        if (this.$refs.MapTrailCreator && this.$refs.MapTrailCreator.map && this.$refs.MapTrailCreator.trackLayer) {
+          // Invalidate the map size so that Leaflet is aware of the container's new dimensions
+          this.$refs.MapTrailCreator.map.invalidateSize();
+
+          // Refit the map boundaries to the trackLayer
+          const bounds = this.$refs.MapTrailCreator.trackLayer.getBounds();
+          this.$refs.MapTrailCreator.map.fitBounds(bounds);
+        }
+      });
     },
 
     // Metodo per aggiornare i dati del riepilogo
@@ -149,6 +162,9 @@ export default {
       this.chartData.datasets[0].data = []; // Reset dei dati del grafico
       this.chartData.labels = []; // Reset delle etichette del grafico
       this.chartReady = false; // Reset della visualizzazione del grafico
+
+      if (this.circleMarker != null)
+        this.circleMarker.remove();   //Remove the marker from the map
     }
   }
 };
@@ -169,7 +185,8 @@ h1 {
 
 .map-container {
   width: 100%;
-  min-height: 500px; /* Ensure map has minimum height */
+  min-height: 500px;
+  /* Ensure map has minimum height */
 }
 
 /* .chart-container {
@@ -192,7 +209,8 @@ h1 {
   .global-container.chart-ready .map-container,
   .global-container.chart-ready .chart_summary-container {
     width: 100%;
-    min-width: auto; /* Remove fixed min-width */
+    min-width: auto;
+    /* Remove fixed min-width */
   }
 
   .chart_summary-container {

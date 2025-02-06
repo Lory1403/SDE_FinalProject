@@ -3,10 +3,31 @@
     <label class="waiting-label" v-if="map == null">Loading map...</label>
     <div id="map" ref="map"></div>
     <div class="control-container">
-      <button class="button-type" :disabled="!selectedPoints || selectedPoints.length !== 2" v-if="selectedPoints && selectedPoints.length == 2" @click="calculateTrail">Calculate
-        Trail</button>
-      <button class="button-type" :disabled="selectedPoints.length == 0" v-if="selectedPoints.length != 0" @click="clearMap">Clear Map</button>
-      <button class="button-type" :disabled="!trackCoordinates" v-if="trackCoordinates" @click="saveTrack">Save Trail</button>
+      <button
+        class="button-type"
+        :disabled="!selectedPoints || selectedPoints.length !== 2"
+        v-if="selectedPoints && selectedPoints.length == 2"
+        @click="calculateTrail"
+      >
+        Calculate Trail
+      </button>
+      <button
+        class="button-type"
+        :disabled="selectedPoints.length == 0"
+        v-if="selectedPoints.length != 0"
+        @click="clearMap"
+      >
+        Clear Map
+      </button>
+      <button
+        class="button-type"
+        :disabled="!trackCoordinates"
+        v-if="trackCoordinates"
+        @click="saveTrack"
+      >
+        Save Trail
+      </button>
+      <BackButton />
     </div>
   </div>
 </template>
@@ -14,8 +35,12 @@
 <script>
 import L from 'leaflet';
 import axios from 'axios';
+import BackButton from './BackButton.vue';
 
 export default {
+  components: {
+    BackButton
+  },
   data() {
     return {
       map: null,
@@ -79,7 +104,7 @@ export default {
               this.selectedPoints.push(e.latlng);
             }
           });
-        }, 
+        },
         () => {
           // Fallback in case of error or if the user denies geolocation
           this.map = L.map(this.$refs.map).setView([45.5236, -122.6750], 13);
@@ -125,10 +150,10 @@ export default {
 
       // Prima richiesta: calcola il percorso
       fetch(url, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
-                        }
-                    })
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+                    }
+                  })
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -166,7 +191,7 @@ export default {
           const difficultyUrl = `${import.meta.env.VITE_APP_BACKEND_URL}/api/difficulty?start=${start}&end=${end}`;
           fetch(difficultyUrl, {
                         headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
                         }
                     })
             .then(response => {
@@ -223,7 +248,7 @@ export default {
       }
 
       this.trackCoordinates = null;
-      
+
       this.$emit('clear-map');
     },
 
@@ -256,8 +281,13 @@ export default {
 <style>
 /* Keyframes for animating the waiting label */
 @keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Styling for the waiting label */

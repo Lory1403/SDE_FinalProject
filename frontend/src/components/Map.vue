@@ -6,7 +6,7 @@
 import L from "leaflet";
 
 export default {
-  name: "Map",
+  name: "MapComponent",
   props: {
     trail: {
       type: Object,

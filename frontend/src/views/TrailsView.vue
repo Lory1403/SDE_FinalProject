@@ -33,6 +33,9 @@
                     </div>
                 </div>
             </div>
+            <div class="back-button-container">
+                <BackButton />
+            </div>
         </div>
 
         <!-- Track Map -->
@@ -77,6 +80,7 @@ import {
 import { Line } from 'vue-chartjs'
 import { toZonedTime, format } from 'date-fns-tz'
 import ElevationChart from "../components/ElevationChart.vue";
+import BackButton from "../components/BackButton.vue";
 
 ChartJS.register(
     CategoryScale,
@@ -91,6 +95,7 @@ ChartJS.register(
 export default {
     components: {
         ElevationChart,
+        BackButton
         // Line,
     },
 
@@ -467,6 +472,11 @@ export default {
     margin: 50px auto;
     border-radius: 25px;
     box-shadow: 0px 0px 30px #00000065;
+}
+
+.back-button-container {
+    text-align: center;
+    margin-top: 20px;
 }
 
 /* Weather Wrap */

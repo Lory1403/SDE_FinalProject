@@ -30,7 +30,7 @@ export default {
   components: {
     MapTrailCreator,
     ElevationChart,
-    TrailSummary // Aggiungi TrailSummary ai componenti
+    TrailSummary
   },
   data() {
     return {

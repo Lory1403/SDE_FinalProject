@@ -3,14 +3,7 @@
       <h2>Saved Trails</h2>
       <ul>
         <li v-for="trail in trails.tracks" :key="trail._id" @click="selectTrail(trail)">
-          <h3>{{ trail._id }}</h3>
-          <p>Email: {{ trail.email }}</p>
-          <p>Distance: {{ trail.distance }} meters</p>
-          <p>Duration: {{ trail.duration }} seconds</p>
-          <p>Height Difference: {{ trail.heightDiff }} meters</p>
-          <p>Difficulty: {{ trail.cmpIdx }}</p>
-          <p>CAI: {{ trail.CAI }}</p>
-          <p>Timestamp: {{ new Date(trail.timestamp).toLocaleString() }}</p>
+          <p>{{ trail.name }}</p>
         </li>
       </ul>
     </div>
@@ -51,6 +44,12 @@
   </script>
   
   <style scoped>
+  h2 {
+    color: white;
+    text-align: center;
+    margin-top: 20px; /* Aggiunge spazio sopra il titolo */
+  }
+
   ul {
     list-style-type: none;
     padding: 0;
@@ -60,9 +59,18 @@
     cursor: pointer;
     padding: 10px;
     border-bottom: 1px solid #ccc;
+    color: white;
   }
   
   li:hover {
-    background-color: #f0f0f0;
+    background-color: #333;
+  }
+
+  p {
+    margin: 0;
+    border: 1px solid #ccc; /* Aggiunge un riquadro attorno al nome del tracciato */
+    padding: 5px; /* Aggiunge un po' di padding all'interno del riquadro */
+    border-radius: 10px; /* Arrotonda i bordi del riquadro */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Aggiunge un'ombra per un effetto smooth */
   }
   </style>

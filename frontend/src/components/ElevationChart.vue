@@ -1,6 +1,6 @@
 <template>
     <div class="chart-container">
-        <Line v-if="chartReady" :data="chartData" :options="options" />
+        <Line v-if="chartReady" :key="chartKey" :data="chartData" :options="options" />
     </div>
 </template>
 
@@ -48,29 +48,20 @@ export default {
     },
     data() {
         return {
-            // Opzioni per Bézier smoothing
-            smoothOptions: {
-                tension: 1, // Curva Bézier, maggiore tensione, più curva
-                fill: false,  // Non riempiamo sotto la curva
-                cubicInterpolationMode: 'monotone', // Interpolazione monotona per evitare picchi
-            },
+            chartKey: 0, // Chiave per forzare il ri-rendering del grafico
         };
     },
     watch: {
-        // Assicurati che le opzioni di Bézier vengano applicate ai dati
         chartData: {
-            handler(newData) {
-                this.chartData.datasets.forEach(dataset => {
-                    dataset.tension = this.smoothOptions.tension; // Definisce la Bézier curve
-                    dataset.cubicInterpolationMode = this.smoothOptions.cubicInterpolationMode; // Controllo della forma della curva
-                    
-                    // Imposta il raggio dei punti a 0 per rimuovere i cerchi
-                    dataset.pointRadius = 0; // Rimuove i cerchi dai punti
-                });
+            handler() {
+                this.chartKey++; // Incrementa la chiave per forzare il ri-rendering
             },
-            immediate: true
+            deep: true,
         },
-    }
+        chartReady() {
+            this.chartKey++; // Incrementa la chiave per forzare il ri-rendering
+        },
+    },
 };
 </script>
 

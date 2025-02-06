@@ -37,7 +37,7 @@ const trackSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  email: {
+  googleId: {
     type: String,
     required: true
   },

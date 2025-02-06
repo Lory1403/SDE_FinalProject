@@ -249,6 +249,10 @@ export default {
 
       this.trackCoordinates = null;
 
+      setTimeout(() => {
+        this.map.invalidateSize();
+      }, 100);
+
       this.$emit('clear-map');
     },
 

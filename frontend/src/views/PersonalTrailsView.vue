@@ -120,9 +120,7 @@ export default {
   methods: {
     // Method called once a trail is selected
     selectTrail(trail) {
-      console.log('selectTrail method called');
       this.selectedTrail = trail;
-      console.log('Selected trail:', trail);
 
       // Load information for the selected trail
       this.updateChartData(trail);
@@ -132,8 +130,6 @@ export default {
 
     // Method to update the chart data
     updateChartData(trail) {
-      console.log('updateChartData method called');
-
       // Get the elevation data from the trail
       this.chartData.labels = trail.coordinates.map((_, index) => index);
       this.chartData.datasets[0].data = trail.coordinates.map(coord => coord[2]);

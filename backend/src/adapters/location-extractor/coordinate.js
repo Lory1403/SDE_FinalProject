@@ -17,7 +17,7 @@ async function request(url) {
         }
 
         const apiResponse = await response.json();
-        console.log('JSON response from API:\n', apiResponse);
+        // console.log('JSON response from API:\n', apiResponse);
 
         return apiResponse;
     } catch (error) {

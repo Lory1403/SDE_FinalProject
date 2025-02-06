@@ -7,6 +7,7 @@ const cors = require('cors');
 // Import Javascript files
 const oauth = require('./src/adapters/auth/oauth.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
+const user = require('./src/routes/user.js');
 const weather = require('./src/adapters/weather/weather.js');
 const routeTrack = require('./src/routes/route.track.js');
 const location = require('./src/adapters/location-extractor/coordinate.js');
@@ -47,6 +48,8 @@ app.use('/auth/google', oauth);
 // app.use('/api/tracks/save', routeSave);
 
 // app.use('/api/tracks/get', routeGetTracks);
+
+app.use("/api/user", authChecker, user);  // Aggiungi il prefisso /api/elevation
 
 app.use("/api/track", authChecker, routeTrack);  // Aggiungi il prefisso /api/elevation
 

@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const User = require("../database/models/user.model");
 
 require("dotenv").config();
 
@@ -56,8 +58,7 @@ router.get("/callback", async (req, res) => {
     const userInfo = await userInfoResponse.json();
 
     const payload = {
-      email: userInfo.email,
-      name: userInfo.name,
+      googleId: userInfo.sub,
       iat: Number(userInfo.iat),
     };
 
@@ -66,6 +67,17 @@ router.get("/callback", async (req, res) => {
     };
 
     const jwtToken = jwt.sign(payload, process.env.SESSION_SECRET, options);
+
+    // Save user to the database
+    const existingUser = await User.findOne({ googleId: userInfo.sub });
+    if (!existingUser) {
+      const newUser = new User({
+        email: userInfo.email,
+        name: userInfo.name,
+        googleId: userInfo.sub
+      });
+      await newUser.save();
+    }
 
     // URL di reindirizzamento con il JWT come parametro
     const redirectUrl = `${process.env.FRONTEND_URL}?token=${jwtToken}`;

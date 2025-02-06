@@ -2,7 +2,6 @@
   <div class="dashboard">
     <h1>Welcome to your Dashboard, {{ userInfo.name }}!</h1>
     <p>Email: {{ userInfo.email }}</p>
-    <p>Token Expiration: {{ expirationTime }}</p>
 
     <!-- Pulsanti per navigare tra le pagine -->
     <div class="buttons">
@@ -30,10 +29,9 @@ export default {
       name: '',
       email: '',
     });
-    const expirationTime = ref('');
 
     // Funzione per verificare la validità del token e ottenere i dati dell'utente
-    const getUserInfo = () => {
+    const getUserInfo = async () => {
       const token = localStorage.getItem('authToken');
       if (!token) {
         // Se non c'è il token, reindirizza alla home page
@@ -53,13 +51,16 @@ export default {
           return;
         }
 
-        // Assegna i dati del token alla variabile userInfo
-        userInfo.value.name = decodedToken.name;
-        userInfo.value.email = decodedToken.email;
+        const user = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/user/${decodedToken.googleId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((res) => res.json());
 
-        // Calcola e formatta la data di scadenza
-        const expDate = new Date(decodedToken.exp * 1000);
-        expirationTime.value = expDate.toLocaleString();
+        // Assegna i dati del token alla variabile userInfo
+        userInfo.value.name = user.name;
+        userInfo.value.email = user.email;
       } catch (error) {
         console.error('Errore nella decodifica del token:', error);
         window.location.href = '/'; // In caso di errore nella decodifica, reindirizza alla home
@@ -71,8 +72,7 @@ export default {
     });
 
     return {
-      userInfo,
-      expirationTime,
+      userInfo
     };
   },
 };

@@ -14,6 +14,9 @@
       <router-link to="/createTrail">
         <button class="action-button">Create a Trail</button>
       </router-link>
+      
+      <!-- Pulsante per il logout -->
+      <button class="action-button" @click="logout" style="background-color: red;">Logout</button>
     </div>
   </div>
 </template>
@@ -98,6 +101,12 @@ export default {
     return {
       decryptedData,
     };
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("authToken");
+      window.location.href = "/";
+    },
   },
 };
 </script>

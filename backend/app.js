@@ -12,7 +12,7 @@ const weather = require('./src/process-centric/weather.controller.js');
 const routeTrack = require('./src/routes/route.track.js');
 const location = require('./src/process-centric/coordinate.controller.js');
 const difficulty = require('./src/routes/route.difficulty.js');
-const wayMarkedTrails = require('./src/adapters/wayMarkedTrails/wayMarkedTrails.js');
+const wayMarkedTrails = require('./src/process-centric/wayMarkedTrails.controller.js');
 const routeSave = require('./src/routes/route.save.js');
 const routeGetTracks = require('./src/routes/route.getTracks.js');
 

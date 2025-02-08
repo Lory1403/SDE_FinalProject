@@ -228,6 +228,9 @@ export default {
 
         this.trackLayer = L.polyline(latlngs, { color: 'blue' }).addTo(this.map);
         this.map.fitBounds(this.trackLayer.getBounds());
+        setTimeout(() => {
+          this.map.fitBounds(this.trackLayer.getBounds());
+        }, 100);
       }
     },
 

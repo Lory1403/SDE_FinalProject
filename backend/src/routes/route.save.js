@@ -13,7 +13,7 @@ router.post("/", authChecker, async (req, res) => {
 
         const trackData = {
             track,
-            email: req.user.email,
+            googleId: req.user.googleId,
             timestamp: new Date()
         };
 

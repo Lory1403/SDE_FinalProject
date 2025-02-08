@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
-    <h1>Welcome to your Dashboard, {{ userInfo.name }}!</h1>
-    <p>Email: {{ userInfo.email }}</p>
+    <h1>Welcome to your Dashboard, {{ decryptedData?.name }}!</h1>
+    <p>Email: {{ decryptedData?.email }}</p>
 
     <!-- Pulsanti per navigare tra le pagine -->
     <div class="buttons">
@@ -19,60 +19,84 @@
 </template>
 
 <script>
-import { jwtDecode } from 'jwt-decode';
-import { ref, onMounted } from 'vue';
+import { jwtDecode } from "jwt-decode";
+import { ref, onMounted } from "vue";
+import aesjs from "aes-js";
 
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
   setup() {
-    const userInfo = ref({
-      name: '',
-      email: '',
-    });
+    // Reattività per i dati decifrati
+    const decryptedData = ref(null);
 
-    // Funzione per verificare la validità del token e ottenere i dati dell'utente
-    const getUserInfo = async () => {
-      const token = localStorage.getItem('authToken');
+    // Funzione per decifrare i dati
+    const decryptData = (encrypted) => {
+      try {
+        const encryptedBytes = aesjs.utils.hex.toBytes(encrypted);
+        const aesCtr = new aesjs.ModeOfOperation.ctr(
+          aesjs.utils.utf8.toBytes(import.meta.env.VITE_APP_ENCRYPTION_KEY)
+        );
+        const decryptedBytes = aesCtr.decrypt(encryptedBytes);
+        const decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+        return JSON.parse(decryptedText);
+      } catch (error) {
+        console.error("Errore nella decifratura dei dati:", error);
+        return null;
+      }
+    };
+
+    // Funzione per ottenere e decifrare i dati
+    const fetchAndDecryptData = async () => {
+      const token = localStorage.getItem("authToken");
       if (!token) {
-        // Se non c'è il token, reindirizza alla home page
-        window.location.href = '/';
+        window.location.href = "/"; // Reindirizza se non c'è il token
         return;
       }
 
       try {
-        // Decodifica il token JWT
-        const decodedToken = jwtDecode(token);
-        // Verifica la scadenza del token
-        const currentTime = Date.now() / 1000;
-        if (decodedToken.exp < currentTime) {
-          console.log('Il token è scaduto.');
-          // Se il token è scaduto, reindirizza alla home
-          window.location.href = '/';
-          return;
-        }
-
-        const user = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/user/${decodedToken.googleId}`, {
-          method: 'GET',
+        const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/user`, {
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }).then((res) => res.json());
+        });
 
-        // Assegna i dati del token alla variabile userInfo
-        userInfo.value.name = user.name;
-        userInfo.value.email = user.email;
+        if (!response.ok) {
+          throw new Error("Errore nella richiesta al server");
+        }
+
+        const { encryptedData } = await response.json();
+        decryptedData.value = decryptData(encryptedData);
       } catch (error) {
-        console.error('Errore nella decodifica del token:', error);
-        window.location.href = '/'; // In caso di errore nella decodifica, reindirizza alla home
+        console.error("Errore durante il fetch dei dati:", error);
+        window.location.href = "/"; // Reindirizza in caso di errore
       }
     };
 
+    // Verifica token e ottieni dati al mount
     onMounted(() => {
-      getUserInfo();
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          const currentTime = Date.now() / 1000;
+          if (decodedToken.exp < currentTime) {
+            console.log("Il token è scaduto.");
+            window.location.href = "/";
+          } else {
+            fetchAndDecryptData();
+          }
+        } catch (error) {
+          console.error("Errore nella decodifica del token:", error);
+          window.location.href = "/";
+        }
+      } else {
+        window.location.href = "/"; // Reindirizza se non c'è il token
+      }
     });
 
     return {
-      userInfo
+      decryptedData,
     };
   },
 };

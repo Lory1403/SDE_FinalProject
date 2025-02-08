@@ -431,7 +431,7 @@ export default {
         this.getUserLocation();
         // Check latitude and longitude
         if (this.latitude === "" || this.longitude === "") {
-            console.error("(Normal error at startup) Latitude and longitude are required.");
+            // console.error("(Normal error at startup) Latitude and longitude are required.");
             return;
         }
         else {

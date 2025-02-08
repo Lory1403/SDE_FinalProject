@@ -17,8 +17,8 @@ class CoordinateAdapter {
                 throw new Error('API response was not ok!');
             }
 
-            const apiResponse = await response.json();
-            console.log('JSON response from API:\n', apiResponse);
+        const apiResponse = await response.json();
+        // console.log('JSON response from API:\n', apiResponse);
 
             return apiResponse;
         } catch (error) {

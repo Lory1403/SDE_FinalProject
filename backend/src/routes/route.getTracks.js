@@ -5,9 +5,9 @@ const authChecker = require("../adapters/auth/authChecker.js");
 
 router.get("/", authChecker, async (req, res) => {
     try {
-        const email = req.user.email;
+        const googleId = req.user.googleId;
 
-        const userTracks = await DbGetController.getUserTracks(email);
+        const userTracks = await DbGetController.getUserTracks(googleId);
 
         res.status(200).json({ tracks: userTracks });
     } catch (error) {

@@ -8,9 +8,9 @@ const cors = require('cors');
 const oauth = require('./src/adapters/auth/oauth.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
 const user = require('./src/routes/user.js');
-const weather = require('./src/adapters/weather/weather.js');
+const weather = require('./src/process-centric/weather.controller.js');
 const routeTrack = require('./src/routes/route.track.js');
-const location = require('./src/adapters/location-extractor/coordinate.js');
+const location = require('./src/process-centric/coordinate.controller.js');
 const difficulty = require('./src/routes/route.difficulty.js');
 const wayMarkedTrails = require('./src/adapters/wayMarkedTrails/wayMarkedTrails.js');
 const routeSave = require('./src/routes/route.save.js');
@@ -49,11 +49,12 @@ app.use('/auth/google', oauth);
 
 // app.use('/api/tracks/get', routeGetTracks);
 
-app.use("/api/user", authChecker, user);  // Aggiungi il prefisso /api/elevation
 
-app.use("/api/track", authChecker, routeTrack);  // Aggiungi il prefisso /api/elevation
+app.use("/api/user", authChecker, user);
 
-app.use("/api/difficulty", authChecker, difficulty);  // Aggiungi il prefisso /api/difficulty
+app.use("/api/track", authChecker, routeTrack);
+
+app.use("/api/difficulty", authChecker, difficulty);
 
 // Use the weather route
 app.use('/api/weather', authChecker, weather);

@@ -47,4 +47,7 @@ const trackSchema = new mongoose.Schema({
   }
 });
 
+// Create a compound index
+// trackSchema.index({ googleId: 1, name: 1 }, { unique: true });
+
 module.exports = mongoose.model('Track', trackSchema);

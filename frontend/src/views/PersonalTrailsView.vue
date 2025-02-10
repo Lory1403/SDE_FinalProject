@@ -122,6 +122,10 @@ export default {
     selectTrail(trail) {
       this.selectedTrail = trail;
 
+      // Remove eventual marker from the map
+      if (this.circleMarker != null)
+        this.circleMarker.remove();
+
       // Load information for the selected trail
       this.updateChartData(trail);
       this.updateSummaryData(trail);

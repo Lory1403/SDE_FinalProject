@@ -2,29 +2,18 @@
   <div class="container">
     <label class="waiting-label" v-if="map == null">Loading map...</label>
     <div id="map" ref="map"></div>
+
+    <!-- Control container for buttons -->
     <div class="control-container">
-      <button
-        class="button-type"
-        :disabled="!selectedPoints || selectedPoints.length !== 2"
-        v-if="selectedPoints && selectedPoints.length == 2"
-        @click="calculateTrail"
-      >
+      <button class="button-type" :disabled="!selectedPoints || selectedPoints.length !== 2"
+        v-if="selectedPoints && selectedPoints.length == 2" @click="calculateTrail">
         Calculate Trail
       </button>
-      <button
-        class="button-type"
-        :disabled="selectedPoints.length == 0"
-        v-if="selectedPoints.length != 0"
-        @click="clearMap"
-      >
+      <button class="button-type" :disabled="selectedPoints.length == 0" v-if="selectedPoints.length != 0"
+        @click="clearMap">
         Clear Map
       </button>
-      <button
-        class="button-type"
-        :disabled="!trackCoordinates"
-        v-if="trackCoordinates"
-        @click="saveTrack"
-      >
+      <button class="button-type" :disabled="!trackCoordinates" v-if="trackCoordinates" @click="saveTrack">
         Save Trail
       </button>
       <BackButton />
@@ -105,13 +94,13 @@ export default {
             }
           });
         },
-        () => {
-          // Fallback in case of error or if the user denies geolocation
-          this.map = L.map(this.$refs.map).setView([45.5236, -122.6750], 13);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          }).addTo(this.map);
-        });
+          () => {
+            // Fallback in case of error or if the user denies geolocation
+            this.map = L.map(this.$refs.map).setView([45.5236, -122.6750], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(this.map);
+          });
       } else {
         // Fallback if geolocation is not supported
         this.map = L.map(this.$refs.map).setView([45.5236, -122.6750], 13);
@@ -150,10 +139,10 @@ export default {
 
       // Prima richiesta: calcola il percorso
       fetch(url, {
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
-                    }
-                  })
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+        }
+      })
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -190,10 +179,10 @@ export default {
           // Seconda richiesta: calcola la difficoltà
           const difficultyUrl = `${import.meta.env.VITE_APP_BACKEND_URL}/api/difficulty?start=${start}&end=${end}`;
           fetch(difficultyUrl, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
-                        }
-                    })
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+            }
+          })
             .then(response => {
               if (!response.ok) {
                 throw new Error('Network response for difficulty was not ok');
@@ -215,7 +204,7 @@ export default {
         })
         .catch(error => {
           console.error('Error calculating trail:', error);
-      });
+        });
     },
     // Function to draw the track on the map
     drawTrack() {
@@ -265,7 +254,7 @@ export default {
       if (trailName) {
         this.trackData.name = trailName;
         const token = localStorage.getItem('authToken');
-        axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/tracks/save`, { track: this.trackData }, {
+        axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/track/save`, { track: this.trackData }, {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
           }
@@ -288,10 +277,12 @@ export default {
 <style>
 /* Keyframes for animating the waiting label */
 @keyframes fadeInOut {
+
   0%,
   100% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }

@@ -9,8 +9,8 @@
 
                 <!-- Date and Time input field -->
                 <div class="datetime-box">
-                    <input type="datetime-local" id="forecast-time" name="forecast-time"
-                        v-model="datetime" :max="maxDate" />
+                    <input type="datetime-local" id="forecast-time" name="forecast-time" v-model="datetime"
+                        :max="maxDate" />
                 </div>
 
                 <!-- Search Button -->
@@ -107,10 +107,10 @@ export default {
             weather_icon: `https://openweathermap.org/img/wn/`,
             latitude: "",
             longitude: "",
-            query: "",
-            datetime: "",
+            query: "",          // Location query
+            datetime: "",       // Date and time inserted for the forecast
             maxDate: "",        // Max date for the datetime-local input
-            weather: {
+            weather: {          // Weather data (structure used to store the data returned from the API)
                 data: [
                     {
                         weather: [
@@ -121,12 +121,12 @@ export default {
                     },
                 ],
             },
-            icon: "",
-            extMap: null,
-            layers: [],
-            geoJsonLayer: null,             // Aggiungi una proprietà per mantenere il riferimento al layer GeoJSON
-            route_label: {},
-            selectedLayer: null,
+            icon: "",           // URL for Weather icon
+            extMap: null,       // Map used for the trail
+            layers: [],         // Array of possible track to choose from
+            geoJsonLayer: null,             // Layer for GeoJSON data
+            route_label: {},        // Label for the choosen track
+            selectedLayer: null,        // Selected track to display
             posEleLatLon: new Map(),        // Map for position, elevation and lat/lon
             circleMarker: null,             // Marker for the map (point corrisponding to the elevation)
 
@@ -144,7 +144,7 @@ export default {
                     }
                 ]
             },
-            options: {
+            options: {      // Chart options
                 scales: {
                     x: {
                         display: false,
@@ -213,23 +213,24 @@ export default {
                 await axios
                     .get(`${this.url_coordinate}?text=${this.query}`, {
                         headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
                         }
                     })
                     .then((response) => {
                         this.latitude = response.data.features[0].properties.lat;
                         this.longitude = response.data.features[0].properties.lon;
                     });
-
+                
+                // Fetch weather data
                 await axios
                     .get(`${this.url_base}?lat=${this.latitude}&lon=${this.longitude}&time=${currentDate}`, {
                         headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
+                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
                         }
                     })
                     .then((response) => {
                         this.weather = response.data;   // Set the weather data
-                        this.icon = `${this.weather_icon}${this.weather.data[0].weather[0].icon}${"@2x.png"}`;
+                        this.icon = `${this.weather_icon}${this.weather.data[0].weather[0].icon}${"@2x.png"}`;  // Set the weather icon URL
                     })
                     .catch((error) => {
                         console.error("Error fetching weather:", error);
@@ -241,6 +242,8 @@ export default {
                 await this.initMap();
             }
         },
+
+        // Method to get the current date in the format required by the API (Unix timestamp)
         todaysDate() {
             let date = new Date(this.datetime).getTime() / 1000;
             return date.toString();
@@ -252,10 +255,10 @@ export default {
             // Fetch coordinates from query
             await axios
                 .get(`${this.url_trail}?lat=${lat}&lon=${lon}`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
-                        }
-                    })
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+                    }
+                })
                 .then((response) => {
                     // Clear layers
                     this.layers = [];
@@ -280,22 +283,22 @@ export default {
 
             // Fetch trail data
             await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailById?id=${this.selectedLayer}`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
-                        }
-                    })
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+                }
+            })
                 .then((response) => {
-                    this.route_label = response.data;
+                    this.route_label = response.data;   // Set the route name
                 }).catch((error) => {
                     console.error("Error fetching trail data:", error);
                 });
 
             // Fetch trail map
             await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/highlightTrail?id=${this.selectedLayer}`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
-                        }
-                    })
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+                }
+            })
                 .then((response) => {
                     // Rimuovi il layer GeoJSON precedente, se esiste
                     if (this.geoJsonLayer != null) {
@@ -324,10 +327,10 @@ export default {
         async updateChart() {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/wayMarkedTrails/trailElevation?id=${this.selectedLayer}`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
-                        }
-                    });
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+                    }
+                });
 
                 // Reset data before updating
                 this.chartData.labels = [];
@@ -416,10 +419,10 @@ export default {
         // Method to set position given coordinates and set local time
         async setPosition(position) {
             await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/location/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("authToken")}`,     
-                        }
-                    })
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+                }
+            })
                 .then((response) => response.json())
                 .then((data) => {
                     this.query = data.features[0].properties.city;
@@ -433,7 +436,7 @@ export default {
 
         // Set maxDate value
         var result = new Date();
-        result.setDate(result.getDate() + 5);
+        result.setDate(result.getDate() + 4);
         this.maxDate = result.toISOString().split("T")[0] + "T00:00";
 
         // Check latitude and longitude

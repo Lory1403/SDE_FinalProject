@@ -1,77 +1,48 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: '../.env' });  // Carica le variabili di ambiente dal file .env situato al livello superiore
 const express = require('express');
-const app = express();
+const app = express();  // Crea un'applicazione Express
 
-const cors = require('cors');
+const cors = require('cors');  // Importa il modulo CORS per gestire le richieste da domini esterni
 
-// Import Javascript files
+// Importa i file JavaScript che gestiscono la logica dell'autenticazione, delle API e delle funzionalità
 const oauth = require('./src/process-centric/authentication.controller.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
-const user = require('./src/data-services/user.js');
 const weather = require('./src/process-centric/weather.controller.js');
 const routeTrack = require('./src/process-centric/track.controller.js');
 const location = require('./src/process-centric/coordinate.controller.js');
 const difficulty = require('./src/process-centric/difficulty.controller.js');
 const wayMarkedTrails = require('./src/process-centric/wayMarkedTrails.controller.js');
-const routeSave = require('./src/process-centric/dbSave.controller.js');
-const GetTracks = require('./src/process-centric/dbGetTracks.controller.js');
 
+// Middleware per il parsing di JSON e URL encoded nelle richieste
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware per il logging delle richieste e per la configurazione CORS
 app.use((req, res, next) => {
-    console.log(req.method + " " + req.url);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-access-token');
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    next();
+    console.log(req.method + " " + req.url);  // Logga il metodo HTTP e l'URL della richiesta
+    res.setHeader('Access-Control-Allow-Origin', '*');  // Permette richieste da qualsiasi dominio
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');  // Permette determinati metodi HTTP
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-access-token');  // Permette determinati header
+    res.setHeader('Access-Control-Allow-Credentials', 'true');  // Permette l'invio di credenziali
+    next();  // Passa il controllo al prossimo middleware
 });
 
-app.use(cors());
+app.use(cors());  // Abilita CORS per tutte le richieste
 
-// Google OAuth
+// Rute per l'autenticazione tramite Google OAuth
 app.use('/auth/google', oauth);
 
-// app.use("/api/track", routeTrack);  // Aggiungi il prefisso /api/elevation
-
-// app.use("/api/difficulty", difficulty);  // Aggiungi il prefisso /api/difficulty
-
-// // Use the weather route
-// app.use('/api/weather', weather);
-
-// // Use the location-extractor route
-// app.use('/api/location', location);
-
-// app.use('/api/wayMarkedTrails', wayMarkedTrails);
-
-// app.use('/api/tracks/save', routeSave);
-
-// app.use('/api/tracks/get', routeGetTracks);
-
-
-// app.use("/api/user", authChecker, user);
-
-app.use("/api/track", authChecker, routeTrack);
-
-app.use("/api/difficulty", authChecker, difficulty);
-
-// Use the weather route
+// Rute protette da autenticazione per la gestione dei percorsi, della difficoltà, del meteo, e altre funzionalità
+app.use('/api/track', authChecker, routeTrack);
+app.use('/api/difficulty', authChecker, difficulty);
 app.use('/api/weather', authChecker, weather);
-
-// Use the location-extractor route
 app.use('/api/location', authChecker, location);
-
 app.use('/api/wayMarkedTrails', authChecker, wayMarkedTrails);
 
-app.use('/api/tracks/save', authChecker, routeSave);
-
-app.use('/api/tracks/get', authChecker, GetTracks);
-
-/* Default 404 handler */
+// Handler per la gestione di richieste a URL non trovati (errore 404)
 app.use((req, res) => {
-    res.status(404);
-    res.json({ error: "Not found" });
+    res.status(404);  // Imposta il codice di stato HTTP a 404 (Not Found)
+    res.json({ error: "Not found" });  // Restituisce un messaggio di errore in formato JSON
 });
 
-module.exports = app;
+module.exports = app;  // Esporta l'applicazione Express per l'utilizzo in altri moduli

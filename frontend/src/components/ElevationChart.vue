@@ -48,18 +48,18 @@ export default {
     },
     data() {
         return {
-            chartKey: 0, // Chiave per forzare il ri-rendering del grafico
+            chartKey: 0,    // Key used to force graph re-rendering
         };
     },
     watch: {
         chartData: {
             handler() {
-                this.chartKey++; // Incrementa la chiave per forzare il ri-rendering
+                this.chartKey++;    // Increment key to force re-rendering
             },
             deep: true,
         },
         chartReady() {
-            this.chartKey++; // Incrementa la chiave per forzare il ri-rendering
+            this.chartKey++;    // Increment key to force re-rendering
         },
     },
 };
@@ -68,7 +68,8 @@ export default {
 <style scoped>
 .chart-container {
     width: 100%;
-    height: 300px; /* Altezza personalizzabile */
+    height: 300px;
+    /* Altezza personalizzabile */
     position: relative;
 }
 </style>

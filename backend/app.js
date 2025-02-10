@@ -9,12 +9,12 @@ const oauth = require('./src/process-centric/authentication.controller.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
 const user = require('./src/data-services/user.js');
 const weather = require('./src/process-centric/weather.controller.js');
-const routeTrack = require('./src/routes/route.track.js');
+const routeTrack = require('./src/process-centric/track.controller.js');
 const location = require('./src/process-centric/coordinate.controller.js');
 const difficulty = require('./src/routes/route.difficulty.js');
 const wayMarkedTrails = require('./src/process-centric/wayMarkedTrails.controller.js');
-const routeSave = require('./src/routes/route.save.js');
-const routeGetTracks = require('./src/routes/route.getTracks.js');
+const routeSave = require('./src/process-centric/dbSave.controller.js');
+const GetTracks = require('./src/process-centric/dbGetTracks.controller.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -66,7 +66,7 @@ app.use('/api/wayMarkedTrails', authChecker, wayMarkedTrails);
 
 app.use('/api/tracks/save', authChecker, routeSave);
 
-app.use('/api/tracks/get', authChecker, routeGetTracks);
+app.use('/api/tracks/get', authChecker, GetTracks);
 
 /* Default 404 handler */
 app.use((req, res) => {

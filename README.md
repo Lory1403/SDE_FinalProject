@@ -4,7 +4,7 @@
 
 - GitHub [repository](https://github.com/Lory1403/SDE_FinalProject)
 - Demo site hosted on [vercel.app](https://sde-final-project.vercel.app/)
-- Postman API [documentation](https://red-firefly-165054.postman.co/workspace/SDE_Final_Project~be929b52-9654-448c-aacb-aaec178518c9/collection/27249390-87d4ade2-e420-4174-af7d-d44a12ac7b98?action=share&creator=41994227)
+- Postman API [documentation](https://documenter.getpostman.com/view/27249390/2sAYX3phhC)
 
 ## Overview
 Mountain Hiking Planning is a web application designed for hiking and mountain trekking enthusiasts. It allows users to visualize existing trails, create new ones, and access reliable, community-maintained trail data. The platform ensures frequent updates and high reliability.

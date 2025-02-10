@@ -1,8 +1,6 @@
 # Mountain Hiking Planning
 
 ## Useful Links
-
-- GitHub [repository](https://github.com/Lory1403/SDE_FinalProject)
 - Demo site hosted on [vercel.app](https://sde-final-project.vercel.app/)
 - Postman API [documentation](https://documenter.getpostman.com/view/27249390/2sAYX3phhC)
 

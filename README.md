@@ -41,7 +41,7 @@ Mountain Hiking Planning is a web application designed for hiking and mountain t
 - **services/**: API communication.
 
 ### Backend
-- **routes/**: API endpoints.
-- **models/**: Mongoose schemas.
-- **controllers/**: Business logic.
-- **services/**: Data processing and external connections.
+- **Adapters**: Handles external connections.  
+- **Data Services**: Manages database operations.  
+- **Business Logic**: Processes and manipulates data.  
+- **Process-Centric Layer**: Manages user requests.

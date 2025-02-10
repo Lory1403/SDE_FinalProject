@@ -1,0 +1,10 @@
+TextFile from the group composed by Cerullo, Fasol, Ziviani
+
+Useful Links
+Demo site hosted on vercel.app → https://sde-final-project.vercel.app/
+GitHub: https://github.com/Lory1403/SDE_FinalProject
+Postman API documentation → https://documenter.getpostman.com/view/27249390/2sAYX3phhC
+
+The application can be easilly accessed by going to the first attached link (Demo site hosted on vercel.app)
+It is required a google account to perform the access
+Once logged in the application allows the user to use all the available features

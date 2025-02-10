@@ -57,7 +57,7 @@ export default {
       }
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/user`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/auth/google/user`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

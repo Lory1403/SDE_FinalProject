@@ -5,9 +5,9 @@ const app = express();
 const cors = require('cors');
 
 // Import Javascript files
-const oauth = require('./src/adapters/auth/oauth.js');
+const oauth = require('./src/process-centric/authentication.controller.js');
 const authChecker = require('./src/adapters/auth/authChecker.js');
-const user = require('./src/routes/user.js');
+const user = require('./src/data-services/user.js');
 const weather = require('./src/process-centric/weather.controller.js');
 const routeTrack = require('./src/routes/route.track.js');
 const location = require('./src/process-centric/coordinate.controller.js');
@@ -50,7 +50,7 @@ app.use('/auth/google', oauth);
 // app.use('/api/tracks/get', routeGetTracks);
 
 
-app.use("/api/user", authChecker, user);
+// app.use("/api/user", authChecker, user);
 
 app.use("/api/track", authChecker, routeTrack);
 

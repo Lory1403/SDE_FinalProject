@@ -45,8 +45,6 @@ const getUserTracks = async (googleId) => {
 // Funzione per eliminare un track da un utente, dato l'ID Google e l'ID del track
 const deleteTrack = async (googleId, trackId) => {
     try {
-        console.log(trackId, googleId);  // Log per debug
-
         // Cerca il track da eliminare utilizzando l'ID del track e l'ID dell'utente
         const track = await TrackModel.findOne({ _id: trackId, googleId });
         console.log(track);  // Log per debug

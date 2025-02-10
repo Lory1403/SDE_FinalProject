@@ -1,5 +1,8 @@
+const express = require("express");
 const mongoose = require("mongoose");
+const router = express.Router();
 const TrackModel = require("../adapters/database/models/track.model");
+const authChecker = require("../adapters/auth/authChecker.js");
 
 const saveTrack = async (trackData) => {
     try {
@@ -26,4 +29,26 @@ const saveTrack = async (trackData) => {
     }
 };
 
-module.exports = { saveTrack };
+router.post("/", authChecker, async (req, res) => {
+    try {
+        const { track } = req.body;
+
+        if (!track) {
+            return res.status(400).json({ message: "Track data is required." });
+        }
+
+        const trackData = {
+            track,
+            googleId: req.user.googleId,
+            timestamp: new Date()
+        };
+
+        const savedTrack = await saveTrack(trackData);
+
+        res.status(201).json({ message: "Track saved successfully", track: savedTrack });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+module.exports = router;

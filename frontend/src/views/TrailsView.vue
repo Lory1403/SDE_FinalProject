@@ -9,8 +9,8 @@
 
                 <!-- Date and Time input field -->
                 <div class="datetime-box">
-                    <input type="datetime-local" id="forecast-time" name="forecast-time" value="2018-06-12T19:30"
-                        v-model="datetime" />
+                    <input type="datetime-local" id="forecast-time" name="forecast-time"
+                        v-model="datetime" :max="maxDate" />
                 </div>
 
                 <!-- Search Button -->
@@ -109,6 +109,7 @@ export default {
             longitude: "",
             query: "",
             datetime: "",
+            maxDate: "",        // Max date for the datetime-local input
             weather: {
                 data: [
                     {
@@ -429,6 +430,12 @@ export default {
 
     mounted() {
         this.getUserLocation();
+
+        // Set maxDate value
+        var result = new Date();
+        result.setDate(result.getDate() + 5);
+        this.maxDate = result.toISOString().split("T")[0] + "T00:00";
+
         // Check latitude and longitude
         if (this.latitude === "" || this.longitude === "") {
             // console.error("(Normal error at startup) Latitude and longitude are required.");
